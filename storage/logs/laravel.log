@@ -15720,3 +15720,51 @@ Stack trace:
 #71 C:/Users/musas/Desktop/softwares/6valley/POSA-latest/POSA/server.php(21): require_once('C://Users//musas//...')
 #72 {main}
 "} 
+[2026-04-25 23:11:21] live.ERROR: Maximum execution time of 60 seconds exceeded {"exception":"[object] (Symfony\\Component\\ErrorHandler\\Error\\FatalError(code: 0): Maximum execution time of 60 seconds exceeded at C:/Users/musas/Desktop/softwares/6valley/POSA-latest/POSA/vendor/laravel/framework/src/Illuminate/Database/Concerns/BuildsQueries.php:21)
+[stacktrace]
+#0 {main}
+"} 
+[2026-04-25 20:13:00] live.ERROR: Maximum execution time of 60 seconds exceeded {"exception":"[object] (Symfony\\Component\\ErrorHandler\\Error\\FatalError(code: 0): Maximum execution time of 60 seconds exceeded at C:/Users/musas/Desktop/softwares/6valley/POSA-latest/POSA/app/Contracts/Repositories/BrandRepositoryInterface.php:8)
+[stacktrace]
+#0 {main}
+"} 
+[2026-04-25 20:18:40] live.ERROR: Maximum execution time of 60 seconds exceeded {"exception":"[object] (Symfony\\Component\\ErrorHandler\\Error\\FatalError(code: 0): Maximum execution time of 60 seconds exceeded at C:/Users/musas/Desktop/softwares/6valley/POSA-latest/POSA/vendor/symfony/finder/Iterator/RecursiveDirectoryIterator.php:77)
+[stacktrace]
+#0 {main}
+"} 
+[2026-04-25 20:32:44] live.ERROR: Maximum execution time of 60 seconds exceeded {"exception":"[object] (Symfony\\Component\\ErrorHandler\\Error\\FatalError(code: 0): Maximum execution time of 60 seconds exceeded at C:/Users/musas/Desktop/softwares/6valley/POSA-latest/POSA/vendor/composer/ClassLoader.php:429)
+[stacktrace]
+#0 {main}
+"} 
+[2026-04-26 00:48:55] live.ERROR: Maximum execution time of 60 seconds exceeded {"exception":"[object] (Symfony\\Component\\ErrorHandler\\Error\\FatalError(code: 0): Maximum execution time of 60 seconds exceeded at C:/Users/musas/Desktop/softwares/6valley/POSA-latest/POSA/vendor/composer/ClassLoader.php:429)
+[stacktrace]
+#0 {main}
+"} 
+[2026-04-26 00:52:45] live.ERROR: Maximum execution time of 60 seconds exceeded {"exception":"[object] (Symfony\\Component\\ErrorHandler\\Error\\FatalError(code: 0): Maximum execution time of 60 seconds exceeded at C:/Users/musas/Desktop/softwares/6valley/POSA-latest/POSA/vendor/composer/ClassLoader.php:429)
+[stacktrace]
+#0 {main}
+"} 
+[2026-04-25 21:53:54] live.ERROR: Maximum execution time of 60 seconds exceeded {"exception":"[object] (Symfony\\Component\\ErrorHandler\\Error\\FatalError(code: 0): Maximum execution time of 60 seconds exceeded at C:/Users/musas/Desktop/softwares/6valley/POSA-latest/POSA/vendor/symfony/finder/Iterator/RecursiveDirectoryIterator.php:44)
+[stacktrace]
+#0 {main}
+"} 
+[2026-04-26 00:54:56] live.ERROR: Maximum execution time of 60 seconds exceeded {"exception":"[object] (Symfony\\Component\\ErrorHandler\\Error\\FatalError(code: 0): Maximum execution time of 60 seconds exceeded at C:/Users/musas/Desktop/softwares/6valley/POSA-latest/POSA/vendor/composer/ClassLoader.php:429)
+[stacktrace]
+#0 {main}
+"} 
+[2026-04-26 01:24:07] live.ERROR: Maximum execution time of 60 seconds exceeded {"exception":"[object] (Symfony\\Component\\ErrorHandler\\Error\\FatalError(code: 0): Maximum execution time of 60 seconds exceeded at C:/Users/musas/Desktop/softwares/6valley/POSA-latest/POSA/vendor/composer/ClassLoader.php:429)
+[stacktrace]
+#0 {main}
+"} 
+[2026-04-26 03:15:17] live.ERROR: Maximum execution time of 60 seconds exceeded {"exception":"[object] (Symfony\\Component\\ErrorHandler\\Error\\FatalError(code: 0): Maximum execution time of 60 seconds exceeded at C:/Users/musas/Desktop/softwares/6valley/POSA-latest/POSA/vendor/laravel/framework/src/Illuminate/Database/Connectors/Connector.php:65)
+[stacktrace]
+#0 {main}
+"} 
+[2026-04-26 03:23:50] live.ERROR: Maximum execution time of 60 seconds exceeded {"exception":"[object] (Symfony\\Component\\ErrorHandler\\Error\\FatalError(code: 0): Maximum execution time of 60 seconds exceeded at C:/Users/musas/Desktop/softwares/6valley/POSA-latest/POSA/vendor/laravel/framework/src/Illuminate/Database/Schema/Grammars/MySqlGrammar.php:11)
+[stacktrace]
+#0 {main}
+"} 
+[2026-04-26 10:10:48] live.ERROR: Maximum execution time of 60 seconds exceeded {"exception":"[object] (Symfony\\Component\\ErrorHandler\\Error\\FatalError(code: 0): Maximum execution time of 60 seconds exceeded at C:/Users/musas/Desktop/softwares/6valley/POSA-latest/POSA/vendor/composer/ClassLoader.php:429)
+[stacktrace]
+#0 {main}
+"} 

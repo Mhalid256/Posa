@@ -34,7 +34,8 @@ class VendorRoleController extends BaseController
         'shop_settings',
         'business_settings',
         'employee_management',
-        'help_and_support',  // ← Add this line
+        //'help_and_support',  // ← Add this line
+        'chat',
     ];
 
     public function __construct(
