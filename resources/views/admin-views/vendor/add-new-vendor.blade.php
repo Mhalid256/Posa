@@ -222,6 +222,23 @@
                             </div>
                         @endif
 
+
+                        <div class="col-lg-6 form-group">
+       <label for="monthly_charge" class="mb-2 d-flex gap-1 align-items-center">
+           {{ translate('monthly_subscription_charge') }}
+           <span class="text-info small">({{ translate('amount_charged_every_30_days') }})</span>
+       </label>
+       <div class="input-group">
+           <span class="input-group-text">{{ getCurrencyCode() }}</span>
+           <input type="number" step="0.01" min="0" class="form-control"
+                  id="monthly_charge" name="monthly_charge"
+                  placeholder="{{ translate('ex') }}: 50000"
+                  value="{{ old('monthly_charge', 0) }}" required>
+       </div>
+       <small class="text-muted">{{ translate('this_amount_will_be_charged_to_vendor_every_month_for_platform_access') }}</small>
+   </div>
+ 
+
                     </div>
 
                     <div class="d-flex align-items-center justify-content-end gap-10">

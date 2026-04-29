@@ -65,6 +65,7 @@ use App\Http\Controllers\Vendor\OrderReportController;
 use App\Http\Controllers\Vendor\Employee\VendorEmployeeController;
 use App\Http\Controllers\Vendor\Employee\VendorRoleController;
 use App\Http\Controllers\Vendor\Employee\VendorEmployeeLoginController;
+use App\Http\Controllers\Vendor\VendorSubscriptionCheckoutController;
 
 
 
@@ -110,7 +111,10 @@ Route::group(['middleware' => ['maintenance_mode']], function () {
             });
 
 
-            
+            Route::post('subscription/ipn', [VendorSubscriptionCheckoutController::class, 'ipn'])
+        ->name('vendor.subscription.ipn')
+        ->withoutMiddleware([\App\Http\Middleware\VerifyCsrfToken::class]);
+// ====================================================================
 
 
         });
@@ -407,6 +411,19 @@ Route::group(['middleware' => ['maintenance_mode']], function () {
                 });
             });
 
+            Route::group(['prefix' => 'subscription-test', 'as' => 'subscription.test.'], function () {
+                Route::controller(\App\Http\Controllers\Vendor\SubscriptionTestController::class)->group(function () {
+                Route::get('panel', 'panel')->name('panel');
+                Route::get('expire-now', 'expireNow')->name('expire-now');
+                Route::get('set-days/{days}', 'setDays')->name('set-days');
+                Route::get('simulate-payment', 'simulatePayment')->name('simulate-payment');
+                Route::get('suspend-self', 'suspendSelf')->name('suspend-self');
+                Route::get('run-reminder', 'runReminder')->name('run-reminder');
+                Route::get('run-expiry-processor', 'runExpiryProcessor')->name('run-expiry-processor');
+                Route::get('reset', 'reset')->name('reset');
+    });
+});
+
 
             // =============================================================================
 // 2. Add this route group INSIDE the ['middleware' => ['seller']] group,
@@ -440,6 +457,16 @@ Route::group(['prefix' => 'employee', 'as' => 'employee.'], function () {
         Route::delete('delete', 'delete')->name('delete');
     });
 });
+
+
+   Route::group(['prefix' => 'subscription', 'as' => 'subscription.'], function () {
+       Route::controller(VendorSubscriptionCheckoutController::class)->group(function () {
+           Route::get('checkout', 'checkout')->name('checkout');
+           Route::post('pay', 'initiatePayment')->name('pay');
+           Route::get('callback', 'callback')->name('callback');
+           Route::get('history', 'history')->name('history');
+       });
+   });
 
 // =============================================================================
 // RESULTING NAMED ROUTES (for use in blade href/route() calls):

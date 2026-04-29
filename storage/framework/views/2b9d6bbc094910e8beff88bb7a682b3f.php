@@ -525,6 +525,34 @@
                         </li>
                         <?php endif; ?> 
 
+
+
+                          <?php ($vendorSub = \App\Models\VendorSubscription::where('vendor_id', $vendorId)
+                                ->whereIn('status',['active','grace'])->latest()->first()); ?>
+                            <?php if($vendorSub && $vendorSub->isExpiringSoon()): ?>
+                            <li class="navbar-vertical-aside-has-menu">
+                                <a class="nav-link text-warning d-flex align-items-center gap-2"
+                                    href="<?php echo e(route('vendor.subscription.checkout')); ?>"
+                                    title="<?php echo e(translate('renew_subscription')); ?>">
+                                    <i class="tio-alert-triangle nav-icon text-warning"></i>
+                                    <span class="navbar-vertical-aside-mini-mode-hidden-elements text-truncate fw-bold">
+                                        <?php echo e(translate('renew_subscription')); ?>
+
+                                        <span class="badge text-bg-warning ms-1">
+                                            <?php echo e($vendorSub->daysRemaining()); ?>d
+                                        </span>
+                                    </span>
+                                </a>
+                            </li>
+                            <?php endif; ?>
+                           
+
+
+
+
+
+
+
                         <?php if(!isVendorEmployee()): ?>
                         <li class="nav-item <?php echo e(( Request::is('vendor/business-settings*'))?'scroll-here':''); ?>">
                             <small class="nav-subtitle" title=""><?php echo e(translate('business_section')); ?></small>

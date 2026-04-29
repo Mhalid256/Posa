@@ -13,7 +13,8 @@ class Kernel extends ConsoleKernel
      * @var array
      */
     protected $commands = [
-        //
+        \App\Console\Commands\SendSubscriptionReminders::class,
+        \App\Console\Commands\ProcessExpiredSubscriptions::class,
     ];
 
     /**
@@ -24,8 +25,13 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
-        // $schedule->command('inspire')
-        //          ->hourly();
+        $schedule->command('subscription:send-reminders')
+            ->dailyAt('09:00')
+            ->description('Send subscription expiry reminders to vendors');
+
+        $schedule->command('subscription:process-expired')
+            ->dailyAt('00:05')
+            ->description('Mark and suspend expired vendor subscriptions');
     }
 
     /**

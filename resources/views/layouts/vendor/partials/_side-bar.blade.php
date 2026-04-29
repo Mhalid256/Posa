@@ -488,6 +488,33 @@
                         </li>
                         @endif {{-- canAccessModule('employee_management') --}}
 
+
+
+                          @php($vendorSub = \App\Models\VendorSubscription::where('vendor_id', $vendorId)
+                                ->whereIn('status',['active','grace'])->latest()->first())
+                            @if($vendorSub && $vendorSub->isExpiringSoon())
+                            <li class="navbar-vertical-aside-has-menu">
+                                <a class="nav-link text-warning d-flex align-items-center gap-2"
+                                    href="{{ route('vendor.subscription.checkout') }}"
+                                    title="{{ translate('renew_subscription') }}">
+                                    <i class="tio-alert-triangle nav-icon text-warning"></i>
+                                    <span class="navbar-vertical-aside-mini-mode-hidden-elements text-truncate fw-bold">
+                                        {{ translate('renew_subscription') }}
+                                        <span class="badge text-bg-warning ms-1">
+                                            {{ $vendorSub->daysRemaining() }}d
+                                        </span>
+                                    </span>
+                                </a>
+                            </li>
+                            @endif
+                           
+
+
+
+
+
+
+
                         @if(!isVendorEmployee())
                         <li class="nav-item {{( Request::is('vendor/business-settings*'))?'scroll-here':''}}">
                             <small class="nav-subtitle" title="">{{translate('business_section')}}</small>

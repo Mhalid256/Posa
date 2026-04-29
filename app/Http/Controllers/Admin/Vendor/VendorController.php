@@ -100,6 +100,16 @@ class VendorController extends BaseController
         $vendor = $this->vendorRepo->add(data: $this->vendorService->getAddData($request));
         $this->shopRepo->add($this->shopService->getAddShopDataForRegistration(request: $request, vendorId: $vendor['id']));
         $this->vendorWalletRepo->add($this->vendorService->getInitialWalletData(vendorId: $vendor['id']));
+
+        
+
+        // Create the initial 30-day free subscription
+        $subscriptionService = app(\App\Services\VendorSubscriptionService::class);
+        $subscriptionService->createInitialSubscription(
+            vendorId: $vendor['id'],
+            monthlyCharge: $request->input('monthly_charge', 0)
+        );
+        // ====================================================================
         $data = [
             'vendorName' => $request['f_name'],
             'status' => 'pending',

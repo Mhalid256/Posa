@@ -823,6 +823,12 @@
                                 </span>
                             </a>
                         </li>
+
+
+                    
+
+
+
                     </ul>
                 </li>
 
@@ -870,8 +876,17 @@
                                 <span class="text-truncate">{{ translate('withdrawal_Methods') }}</span>
                             </a>
                         </li>
+                        <li class="nav-item">
+                <a class="nav-link {{ Request::is('admin/vendors/subscription*') ? 'active' : '' }}"
+                href="{{ route('admin.vendors.subscription.index') }}"
+                title="{{ translate('vendor_subscriptions') }}">
+                    <span class="text-truncate">{{ translate('vendor_subscriptions') }}</span>
+                </a>
+            </li>
                     </ul>
                 </li>
+
+                
 
                 <li class="{{ Request::is('admin/delivery-man*') ? 'sub-menu-opened' : '' }}">
                     <a class="nav-link nav-link-toggle text-capitalize {{ Request::is('admin/delivery-man*') ? 'active' : '' }}"

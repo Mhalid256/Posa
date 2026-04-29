@@ -127,6 +127,7 @@ use App\Http\Controllers\Admin\Deliveryman\DeliveryManCashCollectController;
 use App\Http\Controllers\Admin\Settings\StorageConnectionSettingsController;
 use App\Http\Controllers\Admin\Settings\VendorRegistrationSettingController;
 use App\Http\Controllers\Admin\Notification\PushNotificationSettingsController;
+use App\Http\Controllers\Admin\Vendor\VendorSubscriptionController;
 
 
 Route::controller(SharedController::class)->group(function () {
@@ -413,6 +414,19 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.', 'middleware' => ['admin']],
                 Route::post(WithdrawalMethod::UPDATE[URI], 'update')->name('update');
             });
         });
+
+
+         Route::group(['prefix' => 'subscription', 'as' => 'subscription.'], function () {
+       Route::controller(VendorSubscriptionController::class)->group(function () {
+           Route::get('index', 'index')->name('index');
+           Route::post('suspend', 'suspendVendor')->name('suspend');
+           Route::post('reactivate', 'reactivateVendor')->name('reactivate');
+           Route::get('history/{vendorId}', 'vendorHistory')->name('history');
+           Route::post('update-charge', 'updateMonthlyCharge')->name('update-charge');
+       });
+   });
+
+   
     });
 
     Route::group(['prefix' => 'employee', 'as' => 'employee.'], function () {

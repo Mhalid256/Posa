@@ -895,6 +895,21 @@
                                 </span>
                             </a>
                         </li>
+
+
+                        <li class="navbar-vertical-aside-has-menu <?php echo e(Request::is('admin/vendors/subscription*') ? 'active' : ''); ?>">
+                       <a class="nav-link" href="<?php echo e(route('admin.vendors.subscription.index')); ?>"
+                          title="<?php echo e(translate('vendor_subscriptions')); ?>">
+                           <i class="fi fi-sr-credit-card nav-icon"></i>
+                           <span class="navbar-vertical-aside-mini-mode-hidden-elements text-truncate">
+                               <?php echo e(translate('vendor_subscriptions')); ?>
+
+                           </span>
+                       </a>
+                   </li>
+
+
+
                     </ul>
                 </li>
 
