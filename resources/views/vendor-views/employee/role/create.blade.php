@@ -107,14 +107,58 @@ document.getElementById('selectAllModules')?.addEventListener('change', function
 });
 
 function deleteRole(id) {
-    if (!confirm('{{ translate("delete_role_confirmation") }}')) return;
-    fetch('{{ route("vendor.employee.role.delete") }}', {
-        method: 'DELETE',
-        headers: { 'X-CSRF-TOKEN': '{{ csrf_token() }}', 'Content-Type': 'application/json' },
-        body: JSON.stringify({ id: id })
-    }).then(r => r.json()).then(data => {
-        if (data.success) toastr.success(data.message), setTimeout(() => location.reload(), 800);
-        else toastr.error(data.message);
+    Swal.fire({
+        title: '{{ translate("are_you_sure") }}?',
+        text: '{{ translate("delete_role_warning") }}',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#d33',
+        cancelButtonColor: '#3085d6',
+        confirmButtonText: '{{ translate("yes_delete_it") }}',
+        cancelButtonText: '{{ translate("cancel") }}'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            Swal.fire({
+                title: '{{ translate("processing") }}',
+                text: '{{ translate("please_wait") }}',
+                allowOutsideClick: false,
+                didOpen: () => { Swal.showLoading(); }
+            });
+            
+            fetch('{{ route("vendor.employee.role.delete") }}', {
+                method: 'DELETE',
+                headers: {
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ id: id })
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    Swal.fire({
+                        icon: 'success',
+                        title: '{{ translate("deleted") }}',
+                        text: data.message,
+                        timer: 1500,
+                        showConfirmButton: false
+                    }).then(() => location.reload());
+                } else {
+                    Swal.fire({
+                        icon: 'error',
+                        title: '{{ translate("error") }}',
+                        text: data.message
+                    });
+                }
+            })
+            .catch(error => {
+                Swal.fire({
+                    icon: 'error',
+                    title: '{{ translate("error") }}',
+                    text: '{{ translate("something_went_wrong") }}'
+                });
+            });
+        }
     });
 }
 </script>

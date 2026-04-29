@@ -195,5 +195,12 @@
         .password-wrapper .toggle-password-icon:hover {
             color: #007bff;
         }
+
+        .select-wrapper select.form-select {
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            border: 1px solid #e2e8f0;
+            background-color: white;
+        }
     </style>
 @endpush

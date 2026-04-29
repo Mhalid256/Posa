@@ -6,6 +6,7 @@ use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Facades\Storage;
 
 /**
  * @property int    $id
@@ -67,15 +68,34 @@ class VendorEmployee extends Authenticatable
     }
 
     /* ------------------------------------------------------------------ */
-    /*  Helpers                                                             */
+    /*  Helper Accessors                                                    */
     /* ------------------------------------------------------------------ */
 
     /**
-     * Returns decoded identify images array, or empty array.
+     * Get the full URL of the employee profile image.
+     * Uses Laravel Storage URL for consistent public access.
+     */
+    public function getImageFullUrlAttribute(): string
+    {
+        if ($this->image && Storage::disk('public')->exists($this->image)) {
+            return Storage::disk('public')->url($this->image);
+        }
+        // Fallback default image
+        return dynamicAsset('public/assets/back-end/img/400x400/img2.jpg');
+    }
+
+    /**
+     * Get all identity images as full URLs.
      */
     public function getIdentifyImagesAttribute(): array
     {
-        return $this->identify_image ? json_decode($this->identify_image, true) : [];
+        $images = json_decode($this->identify_image, true) ?? [];
+        return array_map(function ($img) {
+            if ($img && Storage::disk('public')->exists($img)) {
+                return Storage::disk('public')->url($img);
+            }
+            return $img; // fallback to raw path if storage not available
+        }, $images);
     }
 
     /**

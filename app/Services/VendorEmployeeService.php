@@ -3,80 +3,91 @@
 namespace App\Services;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class VendorEmployeeService
 {
     /**
      * Process and store the employee profile image.
-     * Follows the same pattern as AdminService::getProceedImage().
+     * Uses Laravel Storage API for consistency.
      */
-    public function getProceedImage(Request $request, ?string $oldImage = null): string
+    public function uploadImage($file, string $directory = 'vendor/employee'): ?string
     {
-        if ($request->hasFile('image')) {
-            $image = $request->file('image');
-            $imageName = fileUploader($image, 'vendor-employee/', 300, $oldImage);
-            return $imageName;
+        if (!$file) {
+            return null;
         }
-        return $oldImage ?? '';
+        $path = $file->store($directory, 'public');
+        return $path;
     }
 
     /**
-     * Process and store identity verification images (can be multiple).
-     * Returns JSON-encoded array of paths.
+     * Delete an image from storage.
      */
-    public function getIdentityImages(Request $request, ?string $oldImages = null): string
+    public function deleteImage(?string $path): void
     {
-        $images = [];
-
-        // Preserve old images if no new ones uploaded
-        if ($oldImages) {
-            $images = json_decode($oldImages, true) ?? [];
+        if ($path && Storage::disk('public')->exists($path)) {
+            Storage::disk('public')->delete($path);
         }
+    }
 
-        if ($request->hasFile('identity_image')) {
-            $images = []; // Reset - replace with new uploads
-            foreach ($request->file('identity_image') as $file) {
-                $images[] = fileUploader($file, 'vendor-employee/identity/', 600);
-            }
+    /**
+     * Process multiple identity images.
+     * Returns JSON-encoded array of stored paths.
+     */
+    public function uploadMultipleImages(array $files, string $directory = 'vendor/employee/identity'): array
+    {
+        $paths = [];
+        foreach ($files as $file) {
+            $paths[] = $this->uploadImage($file, $directory);
         }
-
-        return json_encode($images);
+        return $paths;
     }
 
     /**
      * Build the employee data array for create/update.
+     *
+     * @param Request $request
+     * @param \App\Models\VendorEmployee|null $existingEmployee
+     * @return array
      */
-    public function buildEmployeeData(Request $request, ?array $existing = null): array
+    public function buildEmployeeData($request, $existingEmployee = null): array
     {
         $data = [
-            'name'            => $request['name'],
-            'phone'           => $request['phone'],
-            'email'           => $request['email'],
-            'vendor_role_id'  => $request['vendor_role_id'],
-            'identify_type'   => $request['identify_type'],
-            'identify_number' => $request['identify_number'],
+            'name'            => $request->input('name'),
+            'phone'           => $request->input('phone'),
+            'email'           => $request->input('email'),
+            'vendor_role_id'  => $request->input('vendor_role_id'),
+            'identify_type'   => $request->input('identify_type'),
+            'identify_number' => $request->input('identify_number'),
             'updated_at'      => now(),
         ];
 
-        // Password: only update if provided
+        // Only set password if a new one is provided
         if ($request->filled('password')) {
-            $data['password'] = bcrypt($request['password']);
-        } elseif ($existing) {
-            $data['password'] = $existing['password'];
+            $data['password'] = bcrypt($request->input('password'));
         }
 
         // Profile image
         if ($request->hasFile('image')) {
-            $data['image'] = $this->getProceedImage($request, $existing['image'] ?? null);
-        } elseif ($existing) {
-            $data['image'] = $existing['image'];
+            $oldImage = $existingEmployee ? $existingEmployee->image : null;
+            if ($oldImage) {
+                $this->deleteImage($oldImage);
+            }
+            $data['image'] = $this->uploadImage($request->file('image'), 'vendor/employee');
+        } elseif ($existingEmployee && $existingEmployee->image) {
+            $data['image'] = $existingEmployee->image;
         }
 
-        // Identity images
+        // Identity images (replace all on upload)
         if ($request->hasFile('identity_image')) {
-            $data['identify_image'] = $this->getIdentityImages($request, $existing['identify_image'] ?? null);
-        } elseif ($existing) {
-            $data['identify_image'] = $existing['identify_image'];
+            $oldIdentityImages = $existingEmployee ? json_decode($existingEmployee->identify_image, true) ?? [] : [];
+            foreach ($oldIdentityImages as $oldImg) {
+                $this->deleteImage($oldImg);
+            }
+            $identityPaths = $this->uploadMultipleImages($request->file('identity_image'), 'vendor/employee/identity');
+            $data['identify_image'] = json_encode($identityPaths);
+        } elseif ($existingEmployee && $existingEmployee->identify_image) {
+            $data['identify_image'] = $existingEmployee->identify_image;
         }
 
         return $data;

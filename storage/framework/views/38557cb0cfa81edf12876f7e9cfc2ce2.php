@@ -20,6 +20,12 @@
     }
     // ────────────────────────────────────────────────────────────────────
 ?>
+
+
+<!-- In your vendor layout head or before closing body -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+
 <?php ($direction = Session::get('direction')); ?>
 <div id="headerMain" class="d-none">
     <header id="header"

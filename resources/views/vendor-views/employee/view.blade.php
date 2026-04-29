@@ -17,9 +17,7 @@
                 <div class="row g-2">
                     <div class="col-lg-7 col-xl-8">
                         <div class="media align-items-center flex-wrap flex-sm-nowrap gap-3">
-                            <img width="220" class="rounded border"
-                                 src="{{ getStorageImages(path: $employee->image_full_url ?? [], type: 'backend-profile') }}"
-                                 alt="{{ $employee->name }}">
+                            <img width="220" class="rounded border" src="{{ $employee->image_full_url }}" alt="{{ $employee->name }}">
                             <div class="media-body">
                                 <div class="text-capitalize mb-4">
                                     <h3 class="mb-2">{{ $employee->name }}</h3>
@@ -72,18 +70,17 @@
                             </div>
 
                             @if(!empty($employee->identify_images))
-                                <div class="bg-white rounded p-3 mt-3">
-                                    <h6 class="mb-2">{{ translate('identity_documents') }}</h6>
-                                    <div class="row g-2">
-                                        @foreach($employee->identify_images as $img)
-                                            <div class="col-6">
-                                                <img src="{{ getStorageImages(path: $img, type: 'backend-basic') }}"
-                                                     class="img-fluid rounded border" alt="">
-                                            </div>
-                                        @endforeach
-                                    </div>
-                                </div>
-                            @endif
+    <div class="bg-white rounded p-3 mt-3">
+        <h6 class="mb-2">{{ translate('identity_documents') }}</h6>
+        <div class="row g-2">
+            @foreach($employee->identify_images as $img)
+                <div class="col-6">
+                    <img src="{{ $img }}" class="img-fluid rounded border" alt="">
+                </div>
+            @endforeach
+        </div>
+    </div>
+@endif
                         </div>
                     </div>
 

@@ -13,13 +13,13 @@ use Illuminate\Contracts\View\View;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
 
 class VendorRoleController extends BaseController
 {
     use PaginatorTrait;
 
-    // Vendor panel module permissions — mirrors EMPLOYEE_ROLE_MODULE_PERMISSION
-    // but scoped to vendor panel sections only.
     const VENDOR_ROLE_MODULE_PERMISSION = [
         'dashboard',
         'pos_management',
@@ -34,7 +34,6 @@ class VendorRoleController extends BaseController
         'shop_settings',
         'business_settings',
         'employee_management',
-        //'help_and_support',  // ← Add this line
         'chat',
     ];
 
@@ -48,13 +47,9 @@ class VendorRoleController extends BaseController
         return $this->getAddView($request);
     }
 
-    /* ------------------------------------------------------------------ */
-    /*  List + create (single page, same as admin custom-role/create)       */
-    /* ------------------------------------------------------------------ */
-
     public function getAddView(Request $request): View
     {
-        $vendorId              = auth('seller')->id();
+        $vendorId = auth('seller')->id();
         $vendorRolePermissions = self::VENDOR_ROLE_MODULE_PERMISSION;
         $roles = $this->roleRepo->getVendorRoleList(
             vendorId: $vendorId,
@@ -80,13 +75,9 @@ class VendorRoleController extends BaseController
         return back();
     }
 
-    /* ------------------------------------------------------------------ */
-    /*  Update                                                              */
-    /* ------------------------------------------------------------------ */
-
     public function getUpdateView(int $id): View
     {
-        $vendorId              = auth('seller')->id();
+        $vendorId = auth('seller')->id();
         $vendorRolePermissions = self::VENDOR_ROLE_MODULE_PERMISSION;
         $role = $this->roleRepo->getFirstWhere(params: ['id' => $id, 'vendor_id' => $vendorId]);
         return view(VendorRolePaths::UPDATE[VIEW], compact('role', 'vendorRolePermissions'));
@@ -95,7 +86,6 @@ class VendorRoleController extends BaseController
     public function update(VendorRoleRequest $request): RedirectResponse
     {
         $vendorId = auth('seller')->id();
-        // Make sure the role belongs to this vendor
         $role = $this->roleRepo->getFirstWhere(params: ['id' => $request['id'], 'vendor_id' => $vendorId]);
         if (!$role) {
             ToastMagic::error(translate('access_denied'));
@@ -112,14 +102,10 @@ class VendorRoleController extends BaseController
         return back();
     }
 
-    /* ------------------------------------------------------------------ */
-    /*  Status toggle                                                       */
-    /* ------------------------------------------------------------------ */
-
     public function updateStatus(Request $request): JsonResponse
     {
         $vendorId = auth('seller')->id();
-        $role     = $this->roleRepo->getFirstWhere(params: ['id' => $request['id'], 'vendor_id' => $vendorId]);
+        $role = $this->roleRepo->getFirstWhere(params: ['id' => $request['id'], 'vendor_id' => $vendorId]);
 
         if (!$role) {
             return response()->json(['success' => 0, 'message' => translate('role_not_found')], 404);
@@ -132,36 +118,54 @@ class VendorRoleController extends BaseController
         ]);
     }
 
-    /* ------------------------------------------------------------------ */
-    /*  Delete                                                              */
-    /* ------------------------------------------------------------------ */
-
+    /**
+     * Delete a role and all its associated employees (cascade delete with image cleanup).
+     */
     public function delete(Request $request): JsonResponse
     {
-        $vendorId = auth('seller')->id();
-        $role     = $this->roleRepo->getFirstWhere(params: ['id' => $request['id'], 'vendor_id' => $vendorId]);
+        try {
+            $vendorId = auth('seller')->id();
+            $roleId = $request->input('id');
 
-        if (!$role) {
-            return response()->json(['success' => 0, 'message' => translate('role_not_found')], 404);
-        }
+            $role = $this->roleRepo->getFirstWhere(['id' => $roleId, 'vendor_id' => $vendorId]);
+            if (!$role) {
+                return response()->json(['success' => 0, 'message' => translate('role_not_found')], 404);
+            }
 
-        // Prevent deletion if employees are still assigned to this role
-        $assignedCount = $this->employeeRepo->getListWhere(
-            filters: ['vendor_role_id' => $request['id'], 'vendor_id' => $vendorId],
-            dataLimit: 'all'
-        )->count();
+            // Get all employees under this role
+            $employees = $this->employeeRepo->getListWhere(
+                filters: ['vendor_role_id' => $roleId, 'vendor_id' => $vendorId],
+                dataLimit: 'all'
+            );
 
-        if ($assignedCount > 0) {
+            // Delete each employee and their images
+            foreach ($employees as $employee) {
+                // Delete profile image
+                if ($employee->image) {
+                    Storage::disk('public')->delete($employee->image);
+                }
+                // Delete identity images
+                $identityImages = json_decode($employee->identify_image, true) ?? [];
+                foreach ($identityImages as $img) {
+                    Storage::disk('public')->delete($img);
+                }
+                // Delete employee record (include vendor_id to be safe)
+                $this->employeeRepo->delete(params: ['id' => $employee->id, 'vendor_id' => $vendorId]);
+            }
+
+            // Delete the role
+            $this->roleRepo->delete(params: ['id' => $roleId, 'vendor_id' => $vendorId]);
+
+            return response()->json([
+                'success' => 1,
+                'message' => translate('role_and_associated_employees_deleted_successfully'),
+            ]);
+        } catch (\Exception $e) {
+            Log::error('Role delete error: ' . $e->getMessage());
             return response()->json([
                 'success' => 0,
-                'message' => translate('cannot_delete_role_with_assigned_employees'),
-            ], 422);
+                'message' => translate('something_went_wrong'),
+            ], 500);
         }
-
-        $this->roleRepo->delete(params: ['id' => $request['id'], 'vendor_id' => $vendorId]);
-        return response()->json([
-            'success' => 1,
-            'message' => translate('role_deleted_successfully'),
-        ]);
     }
 }

@@ -189,6 +189,8 @@
 <script src="{{ dynamicAsset(path: 'public/assets/back-end/js/admin/common-script.js') }}"></script>
 @stack('script_2')
 
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
 </body>
 
 </html>

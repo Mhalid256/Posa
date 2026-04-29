@@ -16,6 +16,8 @@ use Illuminate\Contracts\View\View;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
+
 
 class VendorEmployeeController extends BaseController
 {
@@ -70,21 +72,35 @@ class VendorEmployeeController extends BaseController
         return view(VendorEmployeePaths::ADD[VIEW], compact('employee_roles'));
     }
 
-    public function add(VendorEmployeeAddRequest $request): RedirectResponse
-    {
-
-        //dd($request->all());
-
-        $vendorId = auth('seller')->id();
-        $data = $this->employeeService->buildEmployeeData($request);
-        $data['vendor_id']  = $vendorId;
-        $data['status']     = 1;
-        $data['created_at'] = now();
-
-        $this->employeeRepo->add(data: $data);
-        ToastMagic::success(translate('employee_added_successfully'));
-        return redirect()->route('vendor.employee.list');
+   public function add(VendorEmployeeAddRequest $request): RedirectResponse
+{
+    $vendorId = auth('seller')->id();
+    
+    // Handle profile image
+    $imagePath = null;
+    if ($request->hasFile('image')) {
+        $imagePath = $this->employeeService->uploadImage($request->file('image'), 'vendor/employee');
     }
+    
+    // Handle identity images (multiple)
+    $identityImages = [];
+    if ($request->hasFile('identity_image')) {
+        foreach ($request->file('identity_image') as $img) {
+            $identityImages[] = $this->employeeService->uploadImage($img, 'vendor/employee/identity');
+        }
+    }
+    
+    $data = $this->employeeService->buildEmployeeData($request);
+    $data['vendor_id']      = $vendorId;
+    $data['status']         = 1;
+    $data['created_at']     = now();
+    $data['image']          = $imagePath;
+    $data['identify_image'] = json_encode($identityImages);
+    
+    $this->employeeRepo->add(data: $data);
+    ToastMagic::success(translate('employee_added_successfully'));
+    return redirect()->route('vendor.employee.list');
+}
 
     /* ------------------------------------------------------------------ */
     /*  View details                                                        */
@@ -115,23 +131,52 @@ class VendorEmployeeController extends BaseController
     }
 
     public function update(VendorEmployeeUpdateRequest $request): RedirectResponse
-    {
-        $vendorId = auth('seller')->id();
-        $existing = $this->employeeRepo->getFirstWhere(
-            params: ['id' => $request['id'], 'vendor_id' => $vendorId]
-        );
+{
+     $vendorId = auth('seller')->id();
+    $existing = $this->employeeRepo->getFirstWhere(
+        params: ['id' => $request['id'], 'vendor_id' => $vendorId]
+    );
 
-        if (!$existing) {
-            ToastMagic::error(translate('employee_not_found'));
-            return back();
-        }
-
-        $data = $this->employeeService->buildEmployeeData($request, $existing->toArray());
-        $this->employeeRepo->update(id: $request['id'], data: $data);
-        ToastMagic::success(translate('employee_updated_successfully'));
-        return redirect()->route('vendor.employee.list');
+    if (!$existing) {
+        ToastMagic::error(translate('employee_not_found'));
+        return back();
     }
 
+    // Pass the model, NOT $existing->toArray()
+    $data = $this->employeeService->buildEmployeeData($request, $existing);
+    
+    // Handle profile image upload
+    if ($request->hasFile('image')) {
+        // Delete old image if exists
+        if ($existing->image) {
+            $this->employeeService->deleteImage($existing->image);
+        }
+        $data['image'] = $this->employeeService->uploadImage($request->file('image'), 'vendor/employee');
+    }
+    
+    // Handle identity images upload (replace all)
+    if ($request->hasFile('identity_image')) {
+        // Delete old identity images
+        $oldImages = json_decode($existing->identify_image, true) ?? [];
+        foreach ($oldImages as $oldImg) {
+            $this->employeeService->deleteImage($oldImg);
+        }
+        
+        $identityImages = [];
+        foreach ($request->file('identity_image') as $img) {
+            $identityImages[] = $this->employeeService->uploadImage($img, 'vendor/employee/identity');
+        }
+        $data['identify_image'] = json_encode($identityImages);
+    }
+    
+    $this->employeeRepo->update(id: $request['id'], data: $data);
+    
+    // Clear any cached employee data in session
+    session()->forget('vendor_employee_permissions_' . $request['id']);
+    
+    ToastMagic::success(translate('employee_updated_successfully'));
+    return redirect()->route('vendor.employee.list');
+}
     /* ------------------------------------------------------------------ */
     /*  Status toggle                                                       */
     /* ------------------------------------------------------------------ */
@@ -158,21 +203,47 @@ class VendorEmployeeController extends BaseController
     /*  Delete                                                              */
     /* ------------------------------------------------------------------ */
 
-    public function delete(Request $request): JsonResponse
+    
+public function delete(Request $request): JsonResponse
     {
-        $vendorId = auth('seller')->id();
-        $employee = $this->employeeRepo->getFirstWhere(
-            params: ['id' => $request['id'], 'vendor_id' => $vendorId]
-        );
+        try {
+            $vendorId = auth('seller')->id();
+            $employeeId = $request->input('id');
 
-        if (!$employee) {
-            return response()->json(['success' => 0, 'message' => translate('employee_not_found')], 404);
+            $employee = $this->employeeRepo->getFirstWhere([
+                'id' => $employeeId,
+                'vendor_id' => $vendorId
+            ]);
+
+            if (!$employee) {
+                return response()->json(['success' => 0, 'message' => translate('employee_not_found')], 404);
+            }
+
+            // Delete profile image
+            if ($employee->image) {
+                $this->employeeService->deleteImage($employee->image);
+            }
+
+            // Delete identity images
+            $identityImages = json_decode($employee->identify_image, true) ?? [];
+            foreach ($identityImages as $img) {
+                $this->employeeService->deleteImage($img);
+            }
+
+            // Delete the employee record
+            $this->employeeRepo->delete(['id' => $employeeId, 'vendor_id' => $vendorId]);
+
+            return response()->json([
+                'success' => 1,
+                'message' => translate('employee_deleted_successfully'),
+            ]);
+        } catch (\Exception $e) {
+            Log::error('Employee delete error: ' . $e->getMessage());
+            return response()->json([
+                'success' => 0,
+                'message' => translate('something_went_wrong'),
+            ], 500);
         }
-
-        $this->employeeRepo->delete(params: ['id' => $request['id'], 'vendor_id' => $vendorId]);
-        return response()->json([
-            'success' => 1,
-            'message' => translate('employee_deleted_successfully'),
-        ]);
     }
 }
+

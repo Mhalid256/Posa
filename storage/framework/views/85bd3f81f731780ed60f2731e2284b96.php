@@ -191,6 +191,8 @@
 <script src="<?php echo e(dynamicAsset(path: 'public/assets/back-end/js/admin/common-script.js')); ?>"></script>
 <?php echo $__env->yieldPushContent('script_2'); ?>
 
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
 </body>
 
 </html>
