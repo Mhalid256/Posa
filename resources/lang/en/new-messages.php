@@ -2493,4 +2493,13 @@ return [
 	"EMP" => "EMP",
 	"access_permissions" => "Access permissions",
 	"identity_documents" => "Identity documents",
+	"active_Products" => "Active Products",
+	"inactive_Products" => "Inactive Products",
+	"pending_Products" => "Pending Products",
+	"The_phone_number_has_already_been_taken" => "The phone number has already been taken",
+	"ReCAPTCHA Failed!" => "ReCAPTCHA Failed!",
+	"The_phone_number_already_been_taken" => "The phone number already been taken",
+	"The_country_code_field_is_required" => "The country code field is required",
+	"The_password_must_be_at_least :min_characters" => "The password must be at least :min characters",
+	"delivery_man_added_successfully" => "Delivery man added successfully",
 ];

@@ -93,6 +93,8 @@
 <span id="get-search-vendor-product-for-clearance-route" data-action="<?php echo e(route('vendor.clearance-sale.search-product-for-clearance')); ?>"></span>
 <span id="get-multiple-clearance-product-details-route" data-action="<?php echo e(route('vendor.clearance-sale.multiple-clearance-product-details')); ?>"></span>
 
+
+<?php if(!isVendorEmployee()): ?>
 <span id="get-stock-limit-status" data-action="<?php echo e(route('vendor.products.stock-limit-status')); ?>"></span>
 <span id="get-product-stock-limit-title" data-title="<?php echo e(translate('warning')); ?>"></span>
 <span id="get-product-stock-limit-image" data-warning-image="<?php echo e(dynamicAsset(path: 'public/assets/back-end/img/warning-2.png')); ?>"></span>
@@ -105,6 +107,9 @@
       data-stock-limit-page="<?php echo e(route('vendor.products.stock-limit-list')); ?>"
 >
     </span>
+<?php endif; ?>
+
+
 <span id="route-for-real-time-activities" data-route="<?php echo e(route('vendor.dashboard.real-time-activities')); ?>"></span>
 <span id="get-confirm-and-cancel-button-text-for-delete-all-products" data-sure ="<?php echo e(translate('are_you_sure').'?'); ?>"
       data-text="<?php echo e(translate('want_to_clear_all_stock_clearance_products?').'!'); ?>"
@@ -195,5 +200,4 @@
 
 </body>
 
-</html>
-<?php /**PATH C:\Users\musas\Desktop\softwares\6valley\POSA-latest version\POSA\resources\views/layouts/vendor/app.blade.php ENDPATH**/ ?>
+</html><?php /**PATH C:\Users\musas\Desktop\softwares\6valley\POSA-latest version\POSA\resources\views/layouts/vendor/app.blade.php ENDPATH**/ ?>

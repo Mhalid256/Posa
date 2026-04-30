@@ -897,16 +897,7 @@
                         </li>
 
 
-                        <li class="navbar-vertical-aside-has-menu <?php echo e(Request::is('admin/vendors/subscription*') ? 'active' : ''); ?>">
-                       <a class="nav-link" href="<?php echo e(route('admin.vendors.subscription.index')); ?>"
-                          title="<?php echo e(translate('vendor_subscriptions')); ?>">
-                           <i class="fi fi-sr-credit-card nav-icon"></i>
-                           <span class="navbar-vertical-aside-mini-mode-hidden-elements text-truncate">
-                               <?php echo e(translate('vendor_subscriptions')); ?>
-
-                           </span>
-                       </a>
-                   </li>
+                    
 
 
 
@@ -960,8 +951,17 @@
                                 <span class="text-truncate"><?php echo e(translate('withdrawal_Methods')); ?></span>
                             </a>
                         </li>
+                        <li class="nav-item">
+                <a class="nav-link <?php echo e(Request::is('admin/vendors/subscription*') ? 'active' : ''); ?>"
+                href="<?php echo e(route('admin.vendors.subscription.index')); ?>"
+                title="<?php echo e(translate('vendor_subscriptions')); ?>">
+                    <span class="text-truncate"><?php echo e(translate('vendor_subscriptions')); ?></span>
+                </a>
+            </li>
                     </ul>
                 </li>
+
+                
 
                 <li class="<?php echo e(Request::is('admin/delivery-man*') ? 'sub-menu-opened' : ''); ?>">
                     <a class="nav-link nav-link-toggle text-capitalize <?php echo e(Request::is('admin/delivery-man*') ? 'active' : ''); ?>"

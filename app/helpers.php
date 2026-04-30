@@ -20,10 +20,12 @@ if (!function_exists('canAccessModule')) {
             return true;
         }
 
-        // Vendor employee — check their role's module_access
+        // Vendor employee — call getFreshModuleAccess() directly,
+        // never $employee->module_access (accessor is cached by Laravel
+        // after first call and won't reflect mid-session role changes).
         if (auth('vendor_employee')->check()) {
             $employee = auth('vendor_employee')->user();
-            return $employee->hasModuleAccess($module);
+            return in_array($module, $employee->getFreshModuleAccess());
         }
 
         return false;
@@ -80,5 +82,3 @@ if (!function_exists('fileUploader')) {
         return $filePath;
     }
 }
-
-

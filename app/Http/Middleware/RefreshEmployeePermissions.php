@@ -1,21 +1,26 @@
 <?php
 
-
 namespace App\Http\Middleware;
 
 use Closure;
-use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class RefreshEmployeePermissions
 {
-    public function handle(Request $request, Closure $next)
+    public function handle($request, Closure $next)
     {
-        if (auth('vendor_employee')->check()) {
-            $employee = auth('vendor_employee')->user();
-            // Reload role relationship to get latest permissions
+        if (Auth::guard('vendor_employee')->check()) {
+            $employee = Auth::guard('vendor_employee')->user();
+
+            // 1. Bust the cached 'role' Eloquent relation
+            $employee->unsetRelation('role');
             $employee->load('role');
-            // Optionally store in session for quick access
-            session(['employee_modules' => $employee->module_access]);
+
+            // 2. Bust the cached 'module_access' accessor value.
+            //    Laravel stores computed accessor results in the model's
+            //    attribute bag — forgetting it forces a fresh DB read on
+            //    the next call, so added permissions show up immediately.
+            unset($employee->module_access);
         }
         return $next($request);
     }

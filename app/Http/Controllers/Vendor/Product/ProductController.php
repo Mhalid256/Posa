@@ -130,7 +130,7 @@ class ProductController extends BaseController
     {
         $filters = [
             'added_by' => 'seller',
-            'seller_id' => auth('seller')->id(),
+            'seller_id' => currentVendorId(),
             'brand_id' => $request['brand_id'],
             'category_id' => $request['category_id'],
             'sub_category_id' => $request['sub_category_id'],
@@ -741,7 +741,7 @@ class ProductController extends BaseController
             searchValue: $searchValue,
             filters: [
                 'added_by' => 'seller',
-                'seller_id' => auth('seller')->id(),
+                'seller_id' => currentVendorId(),
                 'status' => 1,
                 'category_id' => $request['category_id'],
                 'code' => $request['name'] ?? null,

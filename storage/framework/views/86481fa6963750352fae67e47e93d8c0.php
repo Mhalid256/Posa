@@ -387,6 +387,14 @@
                                         <span class="text-truncate"><?php echo e(translate('Request_Restock_List')); ?></span>
                                     </a>
                                 </li>
+                                
+                                <li class="nav-item <?php echo e(Request::is('vendor/products/stock-limit-list') ? 'active' : ''); ?>">
+                                    <a class="nav-link" href="<?php echo e(route('vendor.products.stock-limit-list')); ?>"
+                                       title="<?php echo e(translate('stock_limit_products')); ?>">
+                                        <span class="tio-circle nav-indicator-icon"></span>
+                                        <span class="text-truncate"><?php echo e(translate('stock_limit_products')); ?></span>
+                                    </a>
+                                </li>
                             </ul>
                         </li>
                         <li class="navbar-vertical-aside-has-menu <?php echo e(Request::is('vendor/reviews/'.Review::INDEX[URI].'*')?'active':''); ?>">

@@ -114,10 +114,10 @@
                         <input type="radio" id="cash" class="paid-by-cash" value="cash" name="type" hidden checked>
                         <label for="cash" class="btn btn--bordered btn--bordered-black px-4 mb-0">{{ translate('cash') }}</label>
                     </li>
-                    <li>
+                   <!-- <li>
                         <input type="radio" value="card" id="card" name="type" hidden>
                         <label for="card" class="btn btn--bordered btn--bordered-black px-4 mb-0">{{ translate('card') }}</label>
-                    </li>
+                    </li>-->
                     @php( $walletStatus = getWebConfig('wallet_status') ?? 0)
                     @if ($walletStatus)
                         <li class="{{ (str_contains(session('current_user'), 'walking-customer')) ? 'd-none':'' }}">

@@ -357,6 +357,14 @@
                                         <span class="text-truncate">{{translate('Request_Restock_List')}}</span>
                                     </a>
                                 </li>
+                                {{-- NEW: Stock Limit Products (Low Stock) --}}
+                                <li class="nav-item {{Request::is('vendor/products/stock-limit-list') ? 'active' : ''}}">
+                                    <a class="nav-link" href="{{route('vendor.products.stock-limit-list')}}"
+                                       title="{{translate('stock_limit_products')}}">
+                                        <span class="tio-circle nav-indicator-icon"></span>
+                                        <span class="text-truncate">{{translate('stock_limit_products')}}</span>
+                                    </a>
+                                </li>
                             </ul>
                         </li>
                         <li class="navbar-vertical-aside-has-menu {{Request::is('vendor/reviews/'.Review::INDEX[URI].'*')?'active':''}}">

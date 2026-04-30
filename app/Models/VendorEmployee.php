@@ -100,20 +100,35 @@ class VendorEmployee extends Authenticatable
 
     /**
      * Decoded module_access from the attached role.
+     * NOTE: Do NOT call $this->module_access in hasModuleAccess() —
+     * Laravel caches accessor results on the model instance, so the
+     * first call's result would be reused for the rest of the request.
+     * Instead use getFreshModuleAccess() which always hits the DB.
      */
     public function getModuleAccessAttribute(): array
     {
-        if (!$this->role) {
+        return $this->getFreshModuleAccess();
+    }
+
+    /**
+     * Always reads module access fresh from DB, bypassing all caches.
+     * Use this anywhere permissions need to be current.
+     */
+    public function getFreshModuleAccess(): array
+    {
+        $role = \App\Models\VendorRole::find($this->vendor_role_id);
+        if (!$role) {
             return [];
         }
-        return json_decode($this->role->module_access, true) ?? [];
+        return json_decode($role->module_access, true) ?? [];
     }
 
     /**
      * Check if the employee has access to a given module key.
+     * Calls getFreshModuleAccess() directly — never the cached accessor.
      */
     public function hasModuleAccess(string $module): bool
     {
-        return in_array($module, $this->module_access);
+        return in_array($module, $this->getFreshModuleAccess());
     }
 }

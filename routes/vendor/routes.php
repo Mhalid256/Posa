@@ -115,11 +115,13 @@ Route::group(['middleware' => ['maintenance_mode']], function () {
         ->name('vendor.subscription.ipn')
         ->withoutMiddleware([\App\Http\Middleware\VerifyCsrfToken::class]);
 // ====================================================================
-
+       Route::group(['middleware' => ['seller', 'employee.refresh']], function () {
+    // all vendor routes that require authentication for both seller and employees
+});
 
         });
 
-
+        
         
 
 
@@ -144,6 +146,12 @@ Route::group(['middleware' => ['maintenance_mode']], function () {
                     Route::get(POS::QUICK_VIEW[URI], 'getQuickView')->name('quick-view');
                     Route::get(POS::SEARCH[URI], 'getSearchedProductsView')->name('search-product');
                 });
+
+
+                
+
+
+
                 Route::controller(CartController::class)->group(function () {
                     Route::post(Cart::VARIANT[URI], 'getVariantPrice')->name('get-variant-price');
                     Route::post(Cart::QUANTITY_UPDATE[URI], 'updateQuantity')->name('quantity-update');

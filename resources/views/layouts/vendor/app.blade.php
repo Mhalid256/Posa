@@ -92,6 +92,8 @@
 <span id="get-search-vendor-product-for-clearance-route" data-action="{{route('vendor.clearance-sale.search-product-for-clearance')}}"></span>
 <span id="get-multiple-clearance-product-details-route" data-action="{{route('vendor.clearance-sale.multiple-clearance-product-details')}}"></span>
 
+{{-- ── Stock limit notification: vendor owner only, never shown to employees ── --}}
+@if(!isVendorEmployee())
 <span id="get-stock-limit-status" data-action="{{route('vendor.products.stock-limit-status')}}"></span>
 <span id="get-product-stock-limit-title" data-title="{{translate('warning')}}"></span>
 <span id="get-product-stock-limit-image" data-warning-image="{{ dynamicAsset(path: 'public/assets/back-end/img/warning-2.png') }}"></span>
@@ -104,6 +106,9 @@
       data-stock-limit-page="{{route('vendor.products.stock-limit-list')}}"
 >
     </span>
+@endif
+{{-- ── End stock limit notification ── --}}
+
 <span id="route-for-real-time-activities" data-route="{{ route('vendor.dashboard.real-time-activities') }}"></span>
 <span id="get-confirm-and-cancel-button-text-for-delete-all-products" data-sure ="{{translate('are_you_sure').'?'}}"
       data-text="{{translate('want_to_clear_all_stock_clearance_products?').'!'}}"

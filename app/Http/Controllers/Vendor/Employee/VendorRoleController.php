@@ -34,7 +34,8 @@ class VendorRoleController extends BaseController
         'shop_settings',
         'business_settings',
         'employee_management',
-        'chat',
+        //'chatting',
+        'help_and_support', 
     ];
 
     public function __construct(
@@ -98,10 +99,16 @@ class VendorRoleController extends BaseController
             'updated_at'    => now(),
         ];
         $this->roleRepo->update(id: $request['id'], data: $data);
+
+        // Touch the updated_at on all employees assigned to this role.
+        // This forces Laravel's session auth to re-fetch the user model
+        // on their next request, so the new permissions take effect immediately.
+        \App\Models\VendorEmployee::where('vendor_role_id', $request['id'])
+            ->update(['updated_at' => now()]);
+
         ToastMagic::success(translate('role_updated_successfully'));
         return back();
     }
-
     public function updateStatus(Request $request): JsonResponse
     {
         $vendorId = auth('seller')->id();
