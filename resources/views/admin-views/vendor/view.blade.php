@@ -1,6 +1,6 @@
 @extends('layouts.admin.app')
 
-@section('title', $seller?->shop->name ?? translate("shop_Name"))
+@section('title', $seller?->shop?->name ?? translate("shop_Name"))
 
 @section('content')
     <div class="content container-fluid">
@@ -54,9 +54,13 @@
             <div class="card-body">
                 <div class="d-flex flex-wrap gap-3 justify-content-between">
                     <div class="media flex-column flex-sm-row gap-3">
-                        <img width="170" class="rounded-circle object-fit-cover aspect-1" src="{{ getStorageImages(path: $seller?->shop->image_full_url, type: 'backend-basic') }}" alt="{{translate('image')}}">
+                        {{-- Safe image: use placeholder if shop or image missing --}}
+                        <img width="170" class="rounded-circle object-fit-cover aspect-1" 
+                             src="{{ $seller?->shop?->image_full_url ? getStorageImages(path: $seller->shop->image_full_url, type: 'backend-basic') : dynamicAsset('public/assets/back-end/img/placeholder.png') }}" 
+                             alt="{{translate('image')}}">
                         <div class="media-body">
-                            @if($seller?->shop->temporary_close || ($seller?->shop->vacation_status && $current_date >= date('Y-m-d', strtotime($seller?->shop->vacation_start_date)) && $current_date <= date('Y-m-d', strtotime($seller?->shop->vacation_end_date))))
+                            {{-- Safe block for temporary close / vacation --}}
+                            @if($seller?->shop && ($seller->shop->temporary_close || ($seller->shop->vacation_status && $current_date >= date('Y-m-d', strtotime($seller->shop->vacation_start_date)) && $current_date <= date('Y-m-d', strtotime($seller->shop->vacation_end_date)))))
                                 <div class="d-flex justify-content-between gap-2 mb-4">
                                     @if($seller->shop->temporary_close)
                                         <div class="btn btn-soft-danger">{{translate('this_shop_currently_close_now')}} </div>
@@ -128,10 +132,11 @@
                                     <a href="{{ $seller['status']!="pending" ? route('admin.vendors.view',['id'=>$seller['id'], 'tab'=>'review']): 'javascript:' }}"
                                        class="text-dark">{{$seller->rating_count}} {{translate('reviews')}}</a>
                                 </div>
-                                @if ( $seller['status']!="pending" && $seller['status']!="suspended" && $seller['status']!="rejected" && $seller?->shop)
-                                     <a href="{{ route('shopView', ['id' => $seller->shop->id]) }}" class="btn btn-outline-primary" target="_blank"></a>
-                                       <i class="fi fi-rr-globe"></i>
-                                       {{translate('view_live')}}
+                                {{-- Only show "view live" link if shop exists and status is not pending/suspended/rejected --}}
+                                @if ($seller['status']!="pending" && $seller['status']!="suspended" && $seller['status']!="rejected" && $seller?->shop)
+                                    <a href="{{ route('shopView', ['id' => $seller->shop->id]) }}" class="btn btn-outline-primary" target="_blank">
+                                        <i class="fi fi-rr-globe"></i>
+                                        {{translate('view_live')}}
                                     </a>
                                 @endif
                             </div>
@@ -195,19 +200,19 @@
                                 <div>
                                     <span class="key text-nowrap">{{translate('shop_name')}}</span>
                                     <span>:</span>
-                                    <span class="value ">{{$seller?->shop->name}}</span>
+                                    <span class="value">{{ $seller?->shop?->name ?? translate('not_found') }}</span>
                                 </div>
 
                                 <div>
                                     <span class="key">{{translate('phone')}}</span>
                                     <span>:</span>
-                                    <span class="value">{{$seller?->shop->contact}}</span>
+                                    <span class="value">{{ $seller?->shop?->contact ?? translate('not_found') }}</span>
                                 </div>
 
                                 <div>
                                     <span class="key">{{translate('address')}}</span>
                                     <span>:</span>
-                                    <span class="value">{{$seller?->shop->address}}</span>
+                                    <span class="value">{{ $seller?->shop?->address ?? translate('not_found') }}</span>
                                 </div>
 
                                 <div>

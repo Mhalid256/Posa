@@ -10,11 +10,11 @@
                             <div class="row">
                                 <div class="col-sm-6">
                                     <div class="form-group mb-4">
-                                        <label  for="f_name"><?php echo e(translate('first_name')); ?> <span class="text-danger">*</span></label>
+                                        <label for="f_name"><?php echo e(translate('first_name')); ?> <span class="text-danger">*</span></label>
                                         <input class="form-control" type="text" name="f_name" placeholder="<?php echo e(translate('ex').': John'); ?>" required>
                                     </div>
                                     <div class="form-group mb-4">
-                                        <label  for="l_name"><?php echo e(translate('last_name')); ?> <span class="text-danger">*</span></label>
+                                        <label for="l_name"><?php echo e(translate('last_name')); ?> <span class="text-danger">*</span></label>
                                         <input class="form-control" type="text" name="l_name" placeholder="<?php echo e(translate('ex').': Doe'); ?>" required>
                                     </div>
                                 </div>
@@ -32,7 +32,6 @@
                                                 <img src="#" class="dark-support img-fit-contain border" alt="" hidden>
                                             </div>
                                         </div>
-
                                         <div class="d-flex flex-column gap-1 upload-img-content text-center">
                                             <h6 class="text-uppercase mb-1 fs-14"><?php echo e(translate('vendor_image')); ?></h6>
                                             <div class="text-muted text-capitalize fs-12"><?php echo e(translate('image_ratio').' '.'1:1'); ?></div>
@@ -47,7 +46,7 @@
 
                             <div class="form-group mb-4">
                                 <label for="store_name" class="text-capitalize"><?php echo e(translate('shop_Name')); ?> <span class="text-danger">*</span></label>
-                                <input class="form-control" type="text" id="shop_name"  name="shop_name" placeholder="<?php echo e(translate('Ex: XYZ store')); ?>" required>
+                                <input class="form-control" type="text" id="shop_name" name="shop_name" placeholder="<?php echo e(translate('Ex: XYZ store')); ?>" required>
                             </div>
                             <div class="form-group mb-4">
                                 <label for="store_address" class="text-capitalize"><?php echo e(translate('shop_address')); ?> <span class="text-danger">*</span></label>
@@ -68,7 +67,6 @@
                                             <img src="#" class="dark-support img-fit-contain border" alt="" hidden>
                                         </div>
                                     </div>
-
                                     <div class="d-flex flex-column gap-1 upload-img-content text-center">
                                         <h6 class="text-uppercase mb-1 fs-14"><?php echo e(translate('upload_logo')); ?></h6>
                                         <div class="text-muted text-capitalize fs-12"><?php echo e(translate('image_ratio').' '.'1:1'); ?></div>
@@ -91,7 +89,6 @@
                                             <img src="#" class="dark-support img-fit-contain border" alt="" hidden>
                                         </div>
                                     </div>
-
                                     <div class="d-flex flex-column gap-1 upload-img-content text-center">
                                         <h6 class="text-uppercase mb-1 fs-14"><?php echo e(translate('upload_banner')); ?></h6>
                                         <div class="text-muted text-capitalize fs-12"><?php echo e(translate('image_ratio').' '.'2:1'); ?></div>
@@ -100,31 +97,15 @@
                                 </div>
                             </div>
                         </div>
-                        <?php ($recaptcha = getWebConfig(name: 'recaptcha')); ?>
-                        <?php if(isset($recaptcha) && $recaptcha['status'] == 1): ?>
-                            <div id="recaptcha-element-vendor-register" class="w-100 pt-2" data-type="image"></div>
-                        <?php else: ?>
-                            <div class="mt-2">
-                                <div class="row py-2">
-                                    <div class="col-6 pr-0">
-                                        <input type="text" class="form-control __h-40" name="default_recaptcha_id_seller_regi" id="default-recaptcha-id-vendor-register" value=""
-                                               placeholder="<?php echo e(translate('enter_captcha_value')); ?>" autocomplete="off" required>
-                                    </div>
-                                    <div class="col-6 input-icons mb-2 w-100 rounded bg-white">
-                                    <span class="d-flex align-items-center align-items-center get-vendor-regi-recaptcha-verify"
-                                          data-link="<?php echo e(route('vendor.auth.recaptcha', ['tmp'=>':dummy-id'])); ?>">
-                                        <img src="<?php echo e(route('vendor.auth.recaptcha', ['tmp'=>1]).'?captcha_session_id=vendorRecaptchaSessionKey'); ?>" alt="" class="rounded __h-40" id="default_recaptcha_id">
-                                        <i class="tio-refresh position-relative cursor-pointer p-2"></i>
-                                    </span>
-                                    </div>
-                                </div>
-                            </div>
-                        <?php endif; ?>
+
+                        
+
                         <div class="d-flex justify-content-start mt-2">
                             <label class="custom-checkbox align-items-center">
-                                <input type="checkbox" class="" id="terms-checkbox" >
+                                <input type="checkbox" id="terms-checkbox">
                                 <span class="form-check-label"><?php echo e(translate('i_agree_with_the')); ?> <a
-                                        href="<?php echo e(route('business-page.view', ['slug' => 'terms-and-conditions'])); ?>" target="_blank" class="text-underline color-bs-primary-force">
+                                        href="<?php echo e(route('business-page.view', ['slug' => 'terms-and-conditions'])); ?>"
+                                        target="_blank" class="text-underline color-bs-primary-force">
                                         <?php echo e(translate('terms_&_conditions')); ?>
 
                                     </a>
@@ -132,13 +113,12 @@
                             </label>
                         </div>
                         <div class="d-flex justify-content-end mb-2 gap-2">
-                            <button type="button" class="btn btn-secondary back-to-main-page"> <?php echo e(translate('back')); ?> </button>
-                            <button type="button" class="btn btn--primary"  id="vendor-apply-submit" disabled="disabled"> <?php echo e(translate('submit')); ?> </button>
+                            <button type="button" class="btn btn-secondary back-to-main-page"><?php echo e(translate('back')); ?></button>
+                            <button type="button" class="btn btn--primary" id="vendor-apply-submit" disabled="disabled"><?php echo e(translate('submit')); ?></button>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-</div>
-<?php /**PATH C:\Users\musas\Desktop\softwares\6valley\POSA-latest version\POSA\resources\themes\default/web-views/seller-view/auth/partial/vendor-information-form.blade.php ENDPATH**/ ?>
+</div><?php /**PATH C:\Users\musas\Desktop\softwares\6valley\POSA-latest version\POSA\resources\themes\default/web-views/seller-view/auth/partial/vendor-information-form.blade.php ENDPATH**/ ?>

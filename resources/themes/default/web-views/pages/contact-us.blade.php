@@ -41,7 +41,6 @@
                                         <input class="form-control email" name="email" type="email"
                                                value="{{ old('email') }}"
                                                placeholder="{{ translate('enter_email_address') }}" required >
-
                                     </div>
                                 </div>
                                 <div class="col-sm-6">
@@ -49,7 +48,6 @@
                                         <label for="cf-phone">{{translate('your_phone')}}</label>
                                         <input class="form-control mobile_number phone-input-with-country-picker" type="number"
                                                value="{{ old('mobile_number') }}" placeholder="{{translate('contact_number')}}" required>
-
                                         <div class="">
                                             <input type="hidden" class="country-picker-country-code w-50" name="country_code" readonly>
                                             <input type="hidden" class="country-picker-phone-number w-50" name="mobile_number" readonly>
@@ -61,7 +59,6 @@
                                         <label for="cf-subject">{{translate('subject')}}:</label>
                                         <input class="form-control subject" type="text" name="subject"
                                                value="{{ old('subject') }}" placeholder="{{translate('short_title')}}" required>
-
                                     </div>
                                 </div>
                                 <div class="col-md-12">
@@ -72,26 +69,10 @@
                                 </div>
                             </div>
 
-                            @php($recaptcha = getWebConfig(name: 'recaptcha'))
-                            @if(isset($recaptcha) && $recaptcha['status'] == 1)
-                                <div id="recaptcha_element" class="w-100" data-type="image"></div>
-                                <br/>
-                            @else
-                                <div class="row mb-3 mt-1">
-                                    <div class="col-6 pr-0">
-                                        <input type="text" class="form-control" name="default_captcha_value" value=""
-                                               placeholder="{{translate('enter_captcha_value')}}" autocomplete="off">
-                                    </div>
-                                    <div class="col-6 input-icons rounded">
-                                        <a href="javascript:" class="get-contact-recaptcha-verify" data-link="{{ URL('/contact/code/captcha') }}">
-                                            <img src="{{ URL('/contact/code/captcha/1') }}" class="input-field __h-44 rounded" id="default_recaptcha_id" alt="">
-                                            <i class="tio-refresh icon"></i>
-                                        </a>
-                                    </div>
-                                </div>
-                            @endif
-                            <div class=" ">
-                                <button class="btn btn--primary" type="submit" >{{translate('send')}}</button>
+                            {{-- CAPTCHA REMOVED --}}
+
+                            <div class="">
+                                <button class="btn btn--primary" type="submit">{{translate('send')}}</button>
                             </div>
                         </form>
                     </div>
@@ -102,33 +83,21 @@
 </div>
 @endsection
 
-
 @push('script')
-
-@if(isset($recaptcha) && $recaptcha['status'] == 1)
-    <script type="text/javascript">
-        "use strict";
-        var onloadCallback = function () {
-            grecaptcha.render('recaptcha_element', {
-                'sitekey': '{{ getWebConfig(name: 'recaptcha')['site_key'] }}'
-            });
-        };
-    </script>
-    <script src="https://www.google.com/recaptcha/api.js?onload=onloadCallback&render=explicit" async
-            defer></script>
-    <script>
-        "use strict";
-        $("#getResponse").on('submit', function (e) {
-            var response = grecaptcha.getResponse();
-            if (response.length === 0) {
-                e.preventDefault();
-                toastr.error($('#message-please-check-recaptcha').data('text'));
-            }
-        });
-    </script>
-@endif
-
+{{-- CAPTCHA SCRIPTS REMOVED --}}
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+"use strict";
+document.getElementById('getResponse')?.addEventListener('submit', function () {
+    Swal.fire({
+        title: 'Processing...',
+        text: 'Please wait',
+        allowOutsideClick: false,
+        allowEscapeKey: false,
+        didOpen: function () { Swal.showLoading(); }
+    });
+});
+</script>
 <script src="{{ theme_asset(path: 'public/assets/front-end/plugin/intl-tel-input/js/intlTelInput.js') }}"></script>
 <script src="{{ theme_asset(path: 'public/assets/front-end/js/country-picker-init.js') }}"></script>
 @endpush
-

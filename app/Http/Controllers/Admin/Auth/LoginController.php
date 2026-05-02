@@ -16,7 +16,6 @@ use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
-use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Session;
 
 class LoginController extends BaseController
@@ -35,6 +34,7 @@ class LoginController extends BaseController
 
     public function generateReCaptcha()
     {
+        // Kept for route compatibility but captcha is disabled on the login form
         $recaptchaBuilder = $this->generateDefaultReCaptcha(4);
         if (Session::has(SessionKey::ADMIN_RECAPTCHA_KEY)) {
             Session::forget(SessionKey::ADMIN_RECAPTCHA_KEY);
@@ -48,43 +48,27 @@ class LoginController extends BaseController
     private function getLoginView(string $loginUrl): View
     {
         $loginTypes = [
-            UserRole::ADMIN => getWebConfig(name: 'admin_login_url'),
-            UserRole::EMPLOYEE => getWebConfig(name: 'employee_login_url')
+            UserRole::ADMIN    => getWebConfig(name: 'admin_login_url'),
+            UserRole::EMPLOYEE => getWebConfig(name: 'employee_login_url'),
         ];
 
         $userType = array_search($loginUrl, $loginTypes);
         abort_if(!$userType, 404);
 
-        $recaptchaBuilder = $this->generateDefaultReCaptcha(4);
-        Session::put(SessionKey::ADMIN_RECAPTCHA_KEY, $recaptchaBuilder->getPhrase());
-
+        // Recaptcha variable still passed so the view doesn't break,
+        // but the captcha block is removed from the blade.
         $recaptcha = getWebConfig(name: 'recaptcha');
 
-        return view('admin-views.auth.login', compact('recaptchaBuilder', 'recaptcha'))->with(['role' => $userType]);
+        return view('admin-views.auth.login', compact('recaptcha'))->with(['role' => $userType]);
     }
 
     public function login(LoginRequest $request): RedirectResponse
     {
-        $recaptcha = getWebConfig(name: 'recaptcha');
-        if (isset($recaptcha) && $recaptcha['status'] == 1) {
-            $request->validate([
-                'g-recaptcha-response' => [
-                    function ($attribute, $value, $fail) {
-                        $secretKey = getWebConfig(name: 'recaptcha')['secret_key'];
-                        $response = $value;
-                        $url = 'https://www.google.com/recaptcha/api/siteverify?secret=' . $secretKey . '&response=' . $response;
-                        $response = Http::get($url);
-                        $response = $response->json();
-                        if (!isset($response['success']) || !$response['success']) {
-                            $fail(translate('ReCAPTCHA_Failed'));
-                        }
-                    },
-                ],
-            ]);
-        } else if (strtolower(session(SessionKey::ADMIN_RECAPTCHA_KEY)) != strtolower($request['default_captcha_value'])) {
-            ToastMagic::error(translate('ReCAPTCHA_Failed'));
-            return back();
-        }
+        // ── Captcha validation removed ──────────────────────────────────────
+        // Previously validated either Google reCAPTCHA or the default image
+        // captcha here. Both checks have been removed so users can log in
+        // without solving a captcha.
+        // ────────────────────────────────────────────────────────────────────
 
         $admin = $this->admin->where('email', $request['email'])->first();
 
@@ -118,5 +102,4 @@ class LoginController extends BaseController
             return redirect('login/' . getWebConfig(name: 'admin_login_url'));
         }
     }
-
 }

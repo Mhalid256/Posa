@@ -73,25 +73,23 @@
                         <label class="form-label user-select-none" for="signingAdminEmail">
                             {{ translate('your_email') }}
                         </label>
-
                         <input type="email" class="form-control form-control-lg" name="email" id="signingAdminEmail"
                                tabindex="1" placeholder="email@address.com" aria-label="email@address.com"
                                required data-msg="Please enter a valid email address.">
                     </div>
+
                     <div class="js-form-message form-group">
                         <label class="form-label user-select-none" for="signingAdminPassword" tabindex="0">
                             <span class="d-flex justify-content-between align-items-center">
                                 {{ translate('password') }}
                             </span>
                         </label>
-
                         <div class="input-group">
                             <input type="password" class="js-toggle-password form-control form-control-lg"
                                    name="password" id="signingAdminPassword"
                                    placeholder="{{ translate('8+_characters_required') }}"
                                    aria-label="8+ characters required" required
-                                   data-msg="Your password is invalid. Please try again."
-                            >
+                                   data-msg="Your password is invalid. Please try again.">
                             <div id="changePassTarget" class="input-group-append changePassTarget">
                                 <a class="text-body-light" href="javascript:">
                                     <i id="changePassIcon" class="fi fi-sr-eye-crossed"></i>
@@ -99,41 +97,18 @@
                             </div>
                         </div>
                     </div>
+
                     <div class="form-group">
                         <div class="form-check d-flex gap-2">
                             <input type="checkbox" class="custom-control-input form-check-input checkbox--input"
-                                   id="termsCheckbox"
-                                   name="remember">
+                                   id="termsCheckbox" name="remember">
                             <label class="custom-control-label text-muted user-select-none" for="termsCheckbox">
                                 {{ translate('remember_me') }}
                             </label>
                         </div>
                     </div>
-                    @if(isset($recaptcha) && $recaptcha['status'] == 1)
-                        <div id="recaptcha_element" class="w-100;" data-type="image"></div>
-                        <br/>
-                    @else
-                        <div class="row p-2">
-                            <div class="col-6 pr-0">
-                                <input type="text" class="form-control form-control-lg form-control-focus-none"
-                                       id="admin-login-recaptcha-input"
-                                       name="default_captcha_value" value="" required
-                                       placeholder="{{ translate('enter_captcha_value') }}">
-                            </div>
-                            <div class="col-6 input-icons bg-white rounded">
-                                <a class="get-login-recaptcha-verify cursor-pointer get-session-recaptcha-auto-fill user-select-none"
-                                   data-link="{{ URL('login/recaptcha/') }}"
-                                   data-session="{{ 'adminRecaptchaSessionKey' }}"
-                                   data-input="#admin-login-recaptcha-input"
-                                >
-                                    <img
-                                        src="{{ URL('login/recaptcha/'.rand().'?captcha_session_id=default_recaptcha_id_'.$role.'_login') }}"
-                                        class="input-field w-90 h-40 p-0 rounded" id="default_recaptcha_id" alt="">
-                                    <i class="fi fi-rr-refresh"></i>
-                                </a>
-                            </div>
-                        </div>
-                    @endif
+
+                    {{-- CAPTCHA REMOVED --}}
 
                     <button type="submit" class="btn btn-lg btn-block btn-primary">
                         {{ translate('sign_in') }}
@@ -167,16 +142,29 @@
 <span id="message-please-check-recaptcha" data-text="{{ translate('please_check_the_recaptcha') }}"></span>
 <span id="message-copied_success" data-text="{{ translate('copied_successfully') }}"></span>
 <span id="route-get-session-recaptcha-code" data-route="{{ route('get-session-recaptcha-code') }}"
-      data-mode="{{ env('APP_MODE') }}"
-></span>
+      data-mode="{{ env('APP_MODE') }}"></span>
 
 <script src="{{ dynamicAsset(path: 'public/assets/new/back-end/libs/jquery/jquery-3.7.1.min.js') }}"></script>
 <script src="{{ dynamicAsset(path: 'public/assets/backend/libs/bootstrap/bootstrap.bundle.min.js') }}"></script>
 <script src="{{ dynamicAsset(path: 'public/assets/new/back-end/js/script.js') }}"></script>
 <script src="{{ dynamicAsset(path: 'public/assets/new/back-end/js/script_neha.js') }}"></script>
 <script src="{{ dynamicAsset(path: 'public/assets/backend/admin/js/auth.js') }}"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 {!! ToastMagic::scripts() !!}
+
+<script>
+"use strict";
+document.getElementById('admin-login-form')?.addEventListener('submit', function () {
+    Swal.fire({
+        title: 'Processing...',
+        text: 'Please wait',
+        allowOutsideClick: false,
+        allowEscapeKey: false,
+        didOpen: function () { Swal.showLoading(); }
+    });
+});
+</script>
 
 @if ($errors->any())
     <script>
@@ -187,18 +175,5 @@
     </script>
 @endif
 
-@if(isset($recaptcha) && $recaptcha['status'] == 1)
-    <script type="text/javascript">
-        "use strict";
-        var onloadCallback = function () {
-            grecaptcha.render('recaptcha_element', {
-                'sitekey': '{{ getWebConfig(name: 'recaptcha')['site_key'] }}'
-            });
-        };
-    </script>
-    <script src="https://www.google.com/recaptcha/api.js?onload=onloadCallback&render=explicit" async defer></script>
-@endif
-
 </body>
 </html>
-

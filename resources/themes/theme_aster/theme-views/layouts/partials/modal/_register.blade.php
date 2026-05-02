@@ -21,7 +21,7 @@
                 <div class="mb-4">
                     <h2 class="mb-2">{{ translate('sign_up') }}</h2>
                     <p class="text-muted">
-                        {{ translate('login_to_your_account.') }} {{ translate('Do_n’t_have_account') }}?
+                        {{ translate('login_to_your_account.') }} {{ translate('dont_have_account') }}?
                         <span
                             class="text-primary fw-bold"
                             data-bs-toggle="modal"
@@ -38,57 +38,34 @@
                             <div class="col-sm-6">
                                 <div class="form-group mb-4">
                                     <label class="text-capitalize" for="f_name"> {{ translate('first_name') }}</label>
-                                    <input
-                                        type="text"
-                                        id="f_name"
-                                        name="f_name"
-                                        class="form-control"
+                                    <input type="text" id="f_name" name="f_name" class="form-control"
                                         placeholder="{{ translate('ex').':'.translate('Jhone') }}"
-                                        value="{{old('f_name')}}"
-                                        required
-                                    />
+                                        value="{{old('f_name')}}" required/>
                                 </div>
                             </div>
                             <div class="col-sm-6">
                                 <div class="form-group mb-4">
                                     <label class="text-capitalize" for="l_name">{{ translate('last_name') }}</label>
-                                    <input
-                                        type="text"
-                                        id="l_name"
-                                        name="l_name"
-                                        value="{{old('l_name')}}"
+                                    <input type="text" id="l_name" name="l_name" value="{{old('l_name')}}"
                                         class="form-control"
-                                        placeholder="{{ translate('ex').':'.translate('doe') }}"
-                                        required
-                                    />
+                                        placeholder="{{ translate('ex').':'.translate('doe') }}" required/>
                                 </div>
                             </div>
                             <div class="col-sm-6">
                                 <div class="form-group mb-4">
                                     <label for="r_email">{{ translate('email') }}</label>
-                                    <input
-                                        type="text"
-                                        id="r_email"
-                                        value="{{old('email')}}"
-                                        name="email"
+                                    <input type="text" id="r_email" value="{{old('email')}}" name="email"
                                         class="form-control"
                                         placeholder="{{ translate('enter_email_or_phone_number') }}"
-                                        autocomplete="off"
-                                        required
-                                    />
+                                        autocomplete="off" required/>
                                 </div>
                             </div>
                             <div class="col-sm-6">
                                 <div class="form-group mb-4">
                                     <label for="phone">{{ translate('phone') }}</label>
-                                    <input
-                                        type="tel"
-                                        id="phone"
-                                        value="{{old('phone')}}"
+                                    <input type="tel" id="phone" value="{{old('phone')}}"
                                         class="form-control phone-input-with-country-picker"
-                                        placeholder="{{ translate('enter_phone_number') }}"
-                                        required
-                                    />
+                                        placeholder="{{ translate('enter_phone_number') }}" required/>
                                     <input type="hidden" class="country-picker-phone-number w-50" name="phone" readonly>
                                 </div>
                             </div>
@@ -98,33 +75,21 @@
                                         <span class="text-danger mx-1 password-error"></span>
                                     </label>
                                     <div class="input-inner-end-ele">
-                                        <input
-                                            type="password"
-                                            id="password"
-                                            name="password"
-                                            class="form-control"
+                                        <input type="password" id="password" name="password" class="form-control"
                                             placeholder="{{ translate('minimum_8_characters_long') }}"
-                                            autocomplete="off"
-                                            required
-                                        />
+                                            autocomplete="off" required/>
                                         <i class="bi bi-eye-slash-fill togglePassword"></i>
                                     </div>
                                 </div>
                             </div>
                             <div class="col-sm-6">
                                 <div class="mb-4">
-                                    <label class="text-capitalize"
-                                           for="confirm_password">{{ translate('confirm_password') }}</label>
+                                    <label class="text-capitalize" for="confirm_password">{{ translate('confirm_password') }}</label>
                                     <div class="input-inner-end-ele">
-                                        <input
-                                            type="password"
-                                            id="confirm_password"
-                                            class="form-control"
+                                        <input type="password" id="confirm_password" class="form-control"
                                             name="con_password"
                                             placeholder="{{ translate('minimum_8_characters_long') }}"
-                                            autocomplete="off"
-                                            required
-                                        />
+                                            autocomplete="off" required/>
                                         <i class="bi bi-eye-slash-fill togglePassword"></i>
                                     </div>
                                 </div>
@@ -145,31 +110,8 @@
                             @endif
                         </div>
 
-                        @if($web_config['recaptcha']['status'] == 1)
-                            <div class="d-flex justify-content-center">
-                                <div id="recaptcha-element-customer-register" class="w-100 mt-2" data-type="image"></div>
-                            </div>
-                        @else
-                            <div class="d-flex gap-3 justify-content-center py-2 mt-4 mb-3">
-                                <div class="">
-                                    <input type="text" class="form-control border __h-40"
-                                           id="customer-regi-recaptcha-input"
-                                           name="default_recaptcha_value_customer_regi" value=""
-                                           placeholder="{{ translate('Enter_captcha_value') }}" autocomplete="off">
-                                </div>
-                                <div class="input-icons rounded bg-white">
-                                    <a id="re-captcha-customer-register"
-                                       data-session="default_recaptcha_id_customer_regi"
-                                       data-input="#customer-regi-recaptcha-input"
-                                       class="d-flex align-items-center align-items-center get-session-recaptcha-auto-fill">
-                                        <img
-                                            src="{{ URL('/customer/auth/code/captcha/1?captcha_session_id=default_recaptcha_id_customer_regi') }}"
-                                            alt="" class="input-field rounded __h-40" id="customer-regi-recaptcha-id">
-                                        <i class="bi bi-arrow-repeat icon cursor-pointer p-2"></i>
-                                    </a>
-                                </div>
-                            </div>
-                        @endif
+                        {{-- CAPTCHA REMOVED --}}
+
                         <div class="d-flex justify-content-center mt-4">
                             <label for="input-checked" class="d-flex gap-1 align-items-center mb-0 user-select-none">
                                 <input type="checkbox" id="input-checked" required/>
@@ -195,11 +137,9 @@
                         @foreach ($web_config['customer_social_login_options'] as $socialLoginServiceKey => $socialLoginService)
                             @if ($socialLoginService && $socialLoginServiceKey != 'apple')
                                 <a href="{{ route('customer.auth.service-login', $socialLoginServiceKey) }}">
-                                    <img
-                                        width="35"
+                                    <img width="35"
                                         src="{{ theme_asset('assets/img/svg/'.$socialLoginServiceKey.'.svg') }}"
-                                        alt=""
-                                        class="dark-support"/>
+                                        alt="" class="dark-support"/>
                                 </a>
                             @endif
                         @endforeach
@@ -211,11 +151,11 @@
 </div>
 
 @push('script')
-    <script src="https://www.google.com/recaptcha/api.js?onload=onloadCallbackCustomerRegi&render=explicit" async
-            defer></script>
+    {{-- CAPTCHA SCRIPTS REMOVED --}}
     <script>
         'use strict';
         initializePhoneInput(".phone-input-with-country-picker", ".country-picker-phone-number");
+
         $('#input-checked').change(function () {
             if ($(this).is(':checked')) {
                 $('#sign-up').removeAttr('disabled');
@@ -223,72 +163,50 @@
                 $('#sign-up').attr('disabled', 'disabled');
             }
         });
-        @if($web_config['recaptcha']['status'] == '1')
-        var onloadCallbackCustomerRegi = function () {
-            let reg_id = grecaptcha.render('recaptcha-element-customer-register', {
-                'sitekey': '{{ getWebConfig(name: 'recaptcha')['site_key'] }}'
-            });
-            $('#recaptcha-element-customer-register').attr('data-reg-id', reg_id);
-        };
-        function recaptcha_f() {
-            let response = grecaptcha.getResponse($('#recaptcha-element-customer-register').attr('data-reg-id'));
-            return response.length !== 0;
-        }
-        @else
-            function reCaptchaCustomerRegister()
-            {
-                $('#re-captcha-customer-register').on('click', function () {
-                    let url = "{{ URL('/customer/auth/code/captcha') }}";
-                    url = url + "/" + Math.random() + '?captcha_session_id=default_recaptcha_id_customer_regi';
-                    document.getElementById('customer-regi-recaptcha-id').src = url;
-                })
-            }
-            reCaptchaCustomerRegister();
-        @endif
+
         $('#customer-form').submit(function (event) {
             event.preventDefault();
-            let formData = $(this).serialize()
-            let recaptcha = true;
-            @if($web_config['recaptcha']['status'] == '1')
-                recaptcha = recaptcha_f();
-            @endif
-            if (recaptcha === true) {
-                $.ajax({
-                    type: 'POST',
-                    url: $(this).attr('action'),
-                    data: formData,
-                    beforeSend: function () {
-                        $("#loading").addClass("d-grid");
-                    },
-                    success: function (data) {
-                        if (data.errors) {
-                            for (let index = 0; index < data.errors.length; index++) {
-                                toastr.error(data.errors[index].message, {
-                                    CloseButton: true,
-                                    ProgressBar: true
-                                });
-                            }
-                        } else {
-                            toastr.success(
-                                '{{translate("Customer_Added_Successfully")}}!', {
-                                    CloseButton: true,
-                                    ProgressBar: true
-                                });
-                            if (data.redirect_url !== '') {
-                                window.location.href = data.redirect_url;
-                            } else {
-                                $('#registerModal').modal('hide');
-                                $('#loginModal').modal('show');
-                            }
+            let formData = $(this).serialize();
+
+            Swal.fire({
+                title: 'Processing...',
+                text: 'Please wait',
+                allowOutsideClick: false,
+                allowEscapeKey: false,
+                didOpen: function () { Swal.showLoading(); }
+            });
+
+            $.ajax({
+                type: 'POST',
+                url: $(this).attr('action'),
+                data: formData,
+                success: function (data) {
+                    Swal.close();
+                    if (data.errors) {
+                        for (let index = 0; index < data.errors.length; index++) {
+                            toastr.error(data.errors[index].message, {
+                                CloseButton: true,
+                                ProgressBar: true
+                            });
                         }
-                    },
-                    complete: function () {
-                        $("#loading").removeClass("d-grid");
-                    },
-                });
-            } else {
-                toastr.error("{{translate('please_check_the_recaptcha')}}");
-            }
+                    } else {
+                        toastr.success('{{translate("Customer_Added_Successfully")}}!', {
+                            CloseButton: true,
+                            ProgressBar: true
+                        });
+                        if (data.redirect_url !== '') {
+                            window.location.href = data.redirect_url;
+                        } else {
+                            $('#registerModal').modal('hide');
+                            $('#loginModal').modal('show');
+                        }
+                    }
+                },
+                error: function () {
+                    Swal.close();
+                    toastr.error('{{ translate("something_went_wrong") }}');
+                }
+            });
         });
     </script>
     <script src="{{theme_asset('assets/js/password-strength.js')}}"></script>

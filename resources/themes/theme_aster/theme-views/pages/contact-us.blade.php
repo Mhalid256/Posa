@@ -17,8 +17,7 @@
                                 </div>
                                 <div class="media-body">
                                     <h4 class="mb-2">{{ translate('call_us') }}</h4>
-                                    <a class="fs-18"
-                                       href="tel:{{ $web_config['phone'] }}">{{ $web_config['phone'] }}</a>
+                                    <a class="fs-18" href="tel:{{ $web_config['phone'] }}">{{ $web_config['phone'] }}</a>
                                 </div>
                             </div>
                         </div>
@@ -88,27 +87,9 @@
                                     <textarea name="message" id="user_message" class="form-control" rows="6" required
                                               placeholder="{{ translate('type_your_message_here').'...' }}"> {{ old('message') }} </textarea>
                                 </div>
-                                @if(isset($recaptcha) && $recaptcha['status'] == 1)
-                                    <div id="recaptcha_element_contact" class="w-100" data-type="image"></div>
-                                    <br/>
-                                @else
-                                    <div class="row p-2">
-                                        <div class="col-6 pr-0">
-                                            <input type="text" class="form-control form-control-lg border-0"
-                                                   name="default_captcha_value" value="" required
-                                                   placeholder="{{translate('enter_captcha_value')}}"
-                                                   autocomplete="off">
-                                        </div>
-                                        <div class="col-6 input-icons rounded">
-                                            <a id="re-captcha-contact-page">
-                                                <img src="{{ URL('/contact/code/captcha/1') }}"
-                                                     class="input-field __h-40" id="default_recaptcha_id"
-                                                     alt="{{translate('image')}}">
-                                                <i class="bi bi-arrow-repeat icon cursor-pointer p-2"></i>
-                                            </a>
-                                        </div>
-                                    </div>
-                                @endif
+
+                                {{-- CAPTCHA REMOVED --}}
+
                                 <div class="d-flex justify-content-end">
                                     <button type="submit"
                                             class="btn btn-primary rounded px-5">{{ translate('submit') }}</button>
@@ -129,38 +110,20 @@
 @endsection
 
 @push('script')
-    @if(isset($recaptcha) && $recaptcha['status'] == 1)
-        <script src="https://www.google.com/recaptcha/api.js?onload=onloadCallback&render=explicit" async
-                defer></script>
-        <script type="text/javascript">
-            "use strict";
-            var onloadCallback = function () {
-                grecaptcha.render('recaptcha_element_contact', {
-                    'sitekey': '{{ getWebConfig(name: 'recaptcha')['site_key'] }}'
-                });
-            };
-            $("#get-response").on('submit', function (e) {
-                let response = grecaptcha.getResponse();
-                if (response.length === 0) {
-                    e.preventDefault();
-                    toastr.error("{{ translate('please_check_the_recaptcha') }}");
-                }
-            });
-        </script>
-    @else
-        <script type="text/javascript">
-            "use strict";
-            $('#re-captcha-contact-page').on('click', function () {
-                let url = "{{ URL('/contact/code/captcha') }}";
-                url = url + "/" + Math.random();
-                document.getElementById('default_recaptcha_id').src = url;
-            })
-        </script>
-    @endif
-
+    {{-- CAPTCHA SCRIPTS REMOVED --}}
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
-        'use strict';
-        initializePhoneInput(".contact-phone-with-country-picker", ".contact-country-picker-phone-number");
+    'use strict';
+    initializePhoneInput(".contact-phone-with-country-picker", ".contact-country-picker-phone-number");
+
+    document.getElementById('get-response')?.addEventListener('submit', function () {
+        Swal.fire({
+            title: 'Processing...',
+            text: 'Please wait',
+            allowOutsideClick: false,
+            allowEscapeKey: false,
+            didOpen: function () { Swal.showLoading(); }
+        });
+    });
     </script>
 @endpush
-

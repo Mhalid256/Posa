@@ -9,7 +9,6 @@
 <link rel="stylesheet" href="{{ theme_asset(path: 'public/assets/front-end/plugin/intl-tel-input/css/intlTelInput.css') }}">
 @endpush
 
-
 @section('content')
     <form id="seller-registration" action="{{route('vendor.auth.registration.index')}}" method="POST" enctype="multipart/form-data">
         @csrf
@@ -32,7 +31,7 @@
                                                         <span class="text-danger">*</span>
                                                         <span class="text-danger fs-12 mail-error"></span>
                                                     </label>
-                                                    <input class="form-control" type="email" id="email"  name="email" placeholder="{{translate('Ex: example@gmail.com')}}" required>
+                                                    <input class="form-control" type="email" id="email" name="email" placeholder="{{translate('Ex: example@gmail.com')}}" required>
                                                 </div>
                                             </div>
                                             <div class="col-sm-6">
@@ -69,7 +68,7 @@
                                             </div>
                                             <div class="col-sm-6">
                                                 <div class="mb-4">
-                                                    <label for="password" class="text-capitalize">
+                                                    <label for="confirm_password" class="text-capitalize">
                                                         {{translate('confirm_password')}}
                                                         <span class="text-danger fs-12 confirm-password-error"></span>
                                                     </label>
@@ -77,7 +76,7 @@
                                                         <input class="form-control text-align-direction" name="confirm_password" type="password" id="confirm_password"
                                                             placeholder="{{ translate('confirm_password') }}" required>
                                                         <label class="password-toggle-btn">
-                                                            <input class="custom-control-input " type="checkbox"><i
+                                                            <input class="custom-control-input" type="checkbox"><i
                                                                 class="tio-hidden password-toggle-indicator"></i><span
                                                                 class="sr-only">{{ translate('show_password') }} </span>
                                                         </label>
@@ -86,7 +85,7 @@
                                             </div>
                                             <div class="col-12">
                                                 <div class="d-flex justify-content-end">
-                                                    <button type="button" class="btn btn--primary proceed-to-next-btn text-capitalize" >{{translate('proceed_to_next')}}</button>
+                                                    <button type="button" class="btn btn--primary proceed-to-next-btn text-capitalize">{{translate('proceed_to_next')}}</button>
                                                 </div>
                                             </div>
                                         </div>
@@ -105,7 +104,6 @@
         </div>
     </form>
 
-
     <div class="modal fade registration-success-modal" tabindex="-1" aria-labelledby="toggle-modal" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content shadow-lg">
@@ -122,7 +120,8 @@
             </div>
         </div>
     </div>
-    <span id="get-confirm-and-cancel-button-text" data-sure ="{{translate('are_you_sure').'?'}}"
+
+    <span id="get-confirm-and-cancel-button-text" data-sure="{{translate('are_you_sure').'?'}}"
       data-message="{{translate('want_to_apply_as_a_vendor').'?'}}"
       data-confirm="{{translate('yes')}}" data-cancel="{{translate('no')}}"></span>
     <span id="proceed-to-next-validation-message"
@@ -132,41 +131,84 @@
           data-enter-password="{{translate('please_enter_your_password').'.'}}"
           data-enter-confirm-password="{{translate('please_enter_your_confirm_password').'.'}}"
           data-password-not-match="{{translate('passwords_do_not_match').'.'}}"
-    >
-    </span>
+    ></span>
 @endsection
 
 @push('script')
-
-@if($web_config['recaptcha']['status'] == '1')
-    <script type="text/javascript">
-        "use strict";
-            var onloadCallback = function () {
-                let reg_id = grecaptcha.render('recaptcha-element-vendor-register', {'sitekey': '{{ $web_config['recaptcha']['site_key'] }}'});
-                $('#recaptcha-element-vendor-register').attr('data-reg-id', reg_id);
-            };
-    </script>
-    <script src="https://www.google.com/recaptcha/api.js?onload=onloadCallback&render=explicit" async defer></script>
-@endif
-<script>
-    $('#vendor-apply-submit').on('click', function(){
-        @if($web_config['recaptcha']['status'] == '1')
-        var response = grecaptcha.getResponse($('#recaptcha-element-vendor-register').attr('data-reg-id'));
-        if (response.length === 0) {
-            toastr.error("{{translate('please_check_the_recaptcha')}}");
-        }else{
-            submitRegistration();
-        }
-        @else
-        if ($('#default-recaptcha-id-vendor-register').val() != '') {
-            submitRegistration();
-        } else {
-            toastr.error("{{translate('please_check_the_recaptcha')}}");
-        }
-        @endif
-    });
-</script>
+    {{-- CAPTCHA SCRIPTS REMOVED --}}
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script src="{{ theme_asset(path: 'public/assets/front-end/plugin/intl-tel-input/js/intlTelInput.js') }}"></script>
 <script src="{{ theme_asset(path: 'public/assets/front-end/js/country-picker-init.js') }}"></script>
 <script src="{{ theme_asset(path: 'public/assets/front-end/js/vendor-registration.js') }}"></script>
+<script>
+"use strict";
+
+// ── Terms checkbox enables/disables the submit button ──────────────────────
+$('#terms-checkbox').on('change', function () {
+    $('#vendor-apply-submit').prop('disabled', !$(this).is(':checked'));
+});
+
+// ── Submit button click: confirm → show processing → AJAX → result ─────────
+$('#vendor-apply-submit').on('click', function () {
+    Swal.fire({
+        title: '{{ translate("are_you_sure") }}?',
+        text: '{{ translate("want_to_apply_as_a_vendor") }}?',
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonText: '{{ translate("yes") }}',
+        cancelButtonText: '{{ translate("no") }}',
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+    }).then(function (result) {
+        if (!result.isConfirmed) return;
+
+        // Show processing
+        Swal.fire({
+            title: 'Processing...',
+            text: 'Please wait while we register your account.',
+            allowOutsideClick: false,
+            allowEscapeKey: false,
+            didOpen: function () { Swal.showLoading(); }
+        });
+
+        let form = $('#seller-registration');
+        let formData = new FormData(form[0]);
+
+        $.ajax({
+            type: 'POST',
+            url: form.attr('action'),
+            data: formData,
+            contentType: false,
+            processData: false,
+            success: function (data) {
+                Swal.fire({
+                    icon: 'success',
+                    title: '{{ translate("congratulations") }}!',
+                    text: '{{ translate("your_registration_is_successful") }}. {{ translate("please-wait_for_admin_approval") }}. {{ translate("you_will_get_a_mail_soon") }}.',
+                    confirmButtonText: '{{ translate("ok") }}',
+                    allowOutsideClick: false,
+                    allowEscapeKey: false,
+                }).then(function () {
+                    if (data.redirectRoute) {
+                        window.location.href = data.redirectRoute;
+                    }
+                });
+            },
+            error: function (xhr) {
+                let message = '{{ translate("something_went_wrong") }}';
+                if (xhr.responseJSON && xhr.responseJSON.errors) {
+                    let errors = xhr.responseJSON.errors;
+                    let firstKey = Object.keys(errors)[0];
+                    message = errors[firstKey][0];
+                }
+                Swal.fire({
+                    icon: 'error',
+                    title: '{{ translate("error") }}',
+                    text: message,
+                });
+            }
+        });
+    });
+});
+</script>
 @endpush

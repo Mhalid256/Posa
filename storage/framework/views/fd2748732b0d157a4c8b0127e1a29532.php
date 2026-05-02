@@ -7,7 +7,6 @@
 <link rel="stylesheet" href="<?php echo e(theme_asset(path: 'public/assets/front-end/plugin/intl-tel-input/css/intlTelInput.css')); ?>">
 <?php $__env->stopPush(); ?>
 
-
 <?php $__env->startSection('content'); ?>
     <form id="seller-registration" action="<?php echo e(route('vendor.auth.registration.index')); ?>" method="POST" enctype="multipart/form-data">
         <?php echo csrf_field(); ?>
@@ -31,7 +30,7 @@
                                                         <span class="text-danger">*</span>
                                                         <span class="text-danger fs-12 mail-error"></span>
                                                     </label>
-                                                    <input class="form-control" type="email" id="email"  name="email" placeholder="<?php echo e(translate('Ex: example@gmail.com')); ?>" required>
+                                                    <input class="form-control" type="email" id="email" name="email" placeholder="<?php echo e(translate('Ex: example@gmail.com')); ?>" required>
                                                 </div>
                                             </div>
                                             <div class="col-sm-6">
@@ -70,7 +69,7 @@
                                             </div>
                                             <div class="col-sm-6">
                                                 <div class="mb-4">
-                                                    <label for="password" class="text-capitalize">
+                                                    <label for="confirm_password" class="text-capitalize">
                                                         <?php echo e(translate('confirm_password')); ?>
 
                                                         <span class="text-danger fs-12 confirm-password-error"></span>
@@ -79,7 +78,7 @@
                                                         <input class="form-control text-align-direction" name="confirm_password" type="password" id="confirm_password"
                                                             placeholder="<?php echo e(translate('confirm_password')); ?>" required>
                                                         <label class="password-toggle-btn">
-                                                            <input class="custom-control-input " type="checkbox"><i
+                                                            <input class="custom-control-input" type="checkbox"><i
                                                                 class="tio-hidden password-toggle-indicator"></i><span
                                                                 class="sr-only"><?php echo e(translate('show_password')); ?> </span>
                                                         </label>
@@ -88,7 +87,7 @@
                                             </div>
                                             <div class="col-12">
                                                 <div class="d-flex justify-content-end">
-                                                    <button type="button" class="btn btn--primary proceed-to-next-btn text-capitalize" ><?php echo e(translate('proceed_to_next')); ?></button>
+                                                    <button type="button" class="btn btn--primary proceed-to-next-btn text-capitalize"><?php echo e(translate('proceed_to_next')); ?></button>
                                                 </div>
                                             </div>
                                         </div>
@@ -107,7 +106,6 @@
         </div>
     </form>
 
-
     <div class="modal fade registration-success-modal" tabindex="-1" aria-labelledby="toggle-modal" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content shadow-lg">
@@ -124,7 +122,8 @@
             </div>
         </div>
     </div>
-    <span id="get-confirm-and-cancel-button-text" data-sure ="<?php echo e(translate('are_you_sure').'?'); ?>"
+
+    <span id="get-confirm-and-cancel-button-text" data-sure="<?php echo e(translate('are_you_sure').'?'); ?>"
       data-message="<?php echo e(translate('want_to_apply_as_a_vendor').'?'); ?>"
       data-confirm="<?php echo e(translate('yes')); ?>" data-cancel="<?php echo e(translate('no')); ?>"></span>
     <span id="proceed-to-next-validation-message"
@@ -134,43 +133,85 @@
           data-enter-password="<?php echo e(translate('please_enter_your_password').'.'); ?>"
           data-enter-confirm-password="<?php echo e(translate('please_enter_your_confirm_password').'.'); ?>"
           data-password-not-match="<?php echo e(translate('passwords_do_not_match').'.'); ?>"
-    >
-    </span>
+    ></span>
 <?php $__env->stopSection(); ?>
 
 <?php $__env->startPush('script'); ?>
-
-<?php if($web_config['recaptcha']['status'] == '1'): ?>
-    <script type="text/javascript">
-        "use strict";
-            var onloadCallback = function () {
-                let reg_id = grecaptcha.render('recaptcha-element-vendor-register', {'sitekey': '<?php echo e($web_config['recaptcha']['site_key']); ?>'});
-                $('#recaptcha-element-vendor-register').attr('data-reg-id', reg_id);
-            };
-    </script>
-    <script src="https://www.google.com/recaptcha/api.js?onload=onloadCallback&render=explicit" async defer></script>
-<?php endif; ?>
-<script>
-    $('#vendor-apply-submit').on('click', function(){
-        <?php if($web_config['recaptcha']['status'] == '1'): ?>
-        var response = grecaptcha.getResponse($('#recaptcha-element-vendor-register').attr('data-reg-id'));
-        if (response.length === 0) {
-            toastr.error("<?php echo e(translate('please_check_the_recaptcha')); ?>");
-        }else{
-            submitRegistration();
-        }
-        <?php else: ?>
-        if ($('#default-recaptcha-id-vendor-register').val() != '') {
-            submitRegistration();
-        } else {
-            toastr.error("<?php echo e(translate('please_check_the_recaptcha')); ?>");
-        }
-        <?php endif; ?>
-    });
-</script>
+    
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script src="<?php echo e(theme_asset(path: 'public/assets/front-end/plugin/intl-tel-input/js/intlTelInput.js')); ?>"></script>
 <script src="<?php echo e(theme_asset(path: 'public/assets/front-end/js/country-picker-init.js')); ?>"></script>
 <script src="<?php echo e(theme_asset(path: 'public/assets/front-end/js/vendor-registration.js')); ?>"></script>
-<?php $__env->stopPush(); ?>
+<script>
+"use strict";
 
+// ── Terms checkbox enables/disables the submit button ──────────────────────
+$('#terms-checkbox').on('change', function () {
+    $('#vendor-apply-submit').prop('disabled', !$(this).is(':checked'));
+});
+
+// ── Submit button click: confirm → show processing → AJAX → result ─────────
+$('#vendor-apply-submit').on('click', function () {
+    Swal.fire({
+        title: '<?php echo e(translate("are_you_sure")); ?>?',
+        text: '<?php echo e(translate("want_to_apply_as_a_vendor")); ?>?',
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonText: '<?php echo e(translate("yes")); ?>',
+        cancelButtonText: '<?php echo e(translate("no")); ?>',
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+    }).then(function (result) {
+        if (!result.isConfirmed) return;
+
+        // Show processing
+        Swal.fire({
+            title: 'Processing...',
+            text: 'Please wait while we register your account.',
+            allowOutsideClick: false,
+            allowEscapeKey: false,
+            didOpen: function () { Swal.showLoading(); }
+        });
+
+        let form = $('#seller-registration');
+        let formData = new FormData(form[0]);
+
+        $.ajax({
+            type: 'POST',
+            url: form.attr('action'),
+            data: formData,
+            contentType: false,
+            processData: false,
+            success: function (data) {
+                Swal.fire({
+                    icon: 'success',
+                    title: '<?php echo e(translate("congratulations")); ?>!',
+                    text: '<?php echo e(translate("your_registration_is_successful")); ?>. <?php echo e(translate("please-wait_for_admin_approval")); ?>. <?php echo e(translate("you_will_get_a_mail_soon")); ?>.',
+                    confirmButtonText: '<?php echo e(translate("ok")); ?>',
+                    allowOutsideClick: false,
+                    allowEscapeKey: false,
+                }).then(function () {
+                    if (data.redirectRoute) {
+                        window.location.href = data.redirectRoute;
+                    }
+                });
+            },
+            error: function (xhr) {
+                let message = '<?php echo e(translate("something_went_wrong")); ?>';
+                if (xhr.responseJSON && xhr.responseJSON.errors) {
+                    let errors = xhr.responseJSON.errors;
+                    let firstKey = Object.keys(errors)[0];
+                    message = errors[firstKey][0];
+                }
+                Swal.fire({
+                    icon: 'error',
+                    title: '<?php echo e(translate("error")); ?>',
+                    text: message,
+                });
+            }
+        });
+    });
+});
+</script>
+<?php $__env->stopPush(); ?>
 <?php echo $__env->make('layouts.front-end.app', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?><?php /**PATH C:\Users\musas\Desktop\softwares\6valley\POSA-latest version\POSA\resources\themes\default/web-views/seller-view/auth/register.blade.php ENDPATH**/ ?>

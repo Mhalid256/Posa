@@ -79,11 +79,11 @@
                             <?php echo e(translate('your_email')); ?>
 
                         </label>
-
                         <input type="email" class="form-control form-control-lg" name="email" id="signingAdminEmail"
                                tabindex="1" placeholder="email@address.com" aria-label="email@address.com"
                                required data-msg="Please enter a valid email address.">
                     </div>
+
                     <div class="js-form-message form-group">
                         <label class="form-label user-select-none" for="signingAdminPassword" tabindex="0">
                             <span class="d-flex justify-content-between align-items-center">
@@ -91,14 +91,12 @@
 
                             </span>
                         </label>
-
                         <div class="input-group">
                             <input type="password" class="js-toggle-password form-control form-control-lg"
                                    name="password" id="signingAdminPassword"
                                    placeholder="<?php echo e(translate('8+_characters_required')); ?>"
                                    aria-label="8+ characters required" required
-                                   data-msg="Your password is invalid. Please try again."
-                            >
+                                   data-msg="Your password is invalid. Please try again.">
                             <div id="changePassTarget" class="input-group-append changePassTarget">
                                 <a class="text-body-light" href="javascript:">
                                     <i id="changePassIcon" class="fi fi-sr-eye-crossed"></i>
@@ -106,42 +104,19 @@
                             </div>
                         </div>
                     </div>
+
                     <div class="form-group">
                         <div class="form-check d-flex gap-2">
                             <input type="checkbox" class="custom-control-input form-check-input checkbox--input"
-                                   id="termsCheckbox"
-                                   name="remember">
+                                   id="termsCheckbox" name="remember">
                             <label class="custom-control-label text-muted user-select-none" for="termsCheckbox">
                                 <?php echo e(translate('remember_me')); ?>
 
                             </label>
                         </div>
                     </div>
-                    <?php if(isset($recaptcha) && $recaptcha['status'] == 1): ?>
-                        <div id="recaptcha_element" class="w-100;" data-type="image"></div>
-                        <br/>
-                    <?php else: ?>
-                        <div class="row p-2">
-                            <div class="col-6 pr-0">
-                                <input type="text" class="form-control form-control-lg form-control-focus-none"
-                                       id="admin-login-recaptcha-input"
-                                       name="default_captcha_value" value="" required
-                                       placeholder="<?php echo e(translate('enter_captcha_value')); ?>">
-                            </div>
-                            <div class="col-6 input-icons bg-white rounded">
-                                <a class="get-login-recaptcha-verify cursor-pointer get-session-recaptcha-auto-fill user-select-none"
-                                   data-link="<?php echo e(URL('login/recaptcha/')); ?>"
-                                   data-session="<?php echo e('adminRecaptchaSessionKey'); ?>"
-                                   data-input="#admin-login-recaptcha-input"
-                                >
-                                    <img
-                                        src="<?php echo e(URL('login/recaptcha/'.rand().'?captcha_session_id=default_recaptcha_id_'.$role.'_login')); ?>"
-                                        class="input-field w-90 h-40 p-0 rounded" id="default_recaptcha_id" alt="">
-                                    <i class="fi fi-rr-refresh"></i>
-                                </a>
-                            </div>
-                        </div>
-                    <?php endif; ?>
+
+                    
 
                     <button type="submit" class="btn btn-lg btn-block btn-primary">
                         <?php echo e(translate('sign_in')); ?>
@@ -178,17 +153,30 @@
 <span id="message-please-check-recaptcha" data-text="<?php echo e(translate('please_check_the_recaptcha')); ?>"></span>
 <span id="message-copied_success" data-text="<?php echo e(translate('copied_successfully')); ?>"></span>
 <span id="route-get-session-recaptcha-code" data-route="<?php echo e(route('get-session-recaptcha-code')); ?>"
-      data-mode="<?php echo e(env('APP_MODE')); ?>"
-></span>
+      data-mode="<?php echo e(env('APP_MODE')); ?>"></span>
 
 <script src="<?php echo e(dynamicAsset(path: 'public/assets/new/back-end/libs/jquery/jquery-3.7.1.min.js')); ?>"></script>
 <script src="<?php echo e(dynamicAsset(path: 'public/assets/backend/libs/bootstrap/bootstrap.bundle.min.js')); ?>"></script>
 <script src="<?php echo e(dynamicAsset(path: 'public/assets/new/back-end/js/script.js')); ?>"></script>
 <script src="<?php echo e(dynamicAsset(path: 'public/assets/new/back-end/js/script_neha.js')); ?>"></script>
 <script src="<?php echo e(dynamicAsset(path: 'public/assets/backend/admin/js/auth.js')); ?>"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 <?php echo ToastMagic::scripts(); ?>
 
+
+<script>
+"use strict";
+document.getElementById('admin-login-form')?.addEventListener('submit', function () {
+    Swal.fire({
+        title: 'Processing...',
+        text: 'Please wait',
+        allowOutsideClick: false,
+        allowEscapeKey: false,
+        didOpen: function () { Swal.showLoading(); }
+    });
+});
+</script>
 
 <?php if($errors->any()): ?>
     <script>
@@ -199,19 +187,5 @@
     </script>
 <?php endif; ?>
 
-<?php if(isset($recaptcha) && $recaptcha['status'] == 1): ?>
-    <script type="text/javascript">
-        "use strict";
-        var onloadCallback = function () {
-            grecaptcha.render('recaptcha_element', {
-                'sitekey': '<?php echo e(getWebConfig(name: 'recaptcha')['site_key']); ?>'
-            });
-        };
-    </script>
-    <script src="https://www.google.com/recaptcha/api.js?onload=onloadCallback&render=explicit" async defer></script>
-<?php endif; ?>
-
 </body>
-</html>
-
-<?php /**PATH C:\Users\musas\Desktop\softwares\6valley\POSA-latest version\POSA\resources\views/admin-views/auth/login.blade.php ENDPATH**/ ?>
+</html><?php /**PATH C:\Users\musas\Desktop\softwares\6valley\POSA-latest version\POSA\resources\views/admin-views/auth/login.blade.php ENDPATH**/ ?>

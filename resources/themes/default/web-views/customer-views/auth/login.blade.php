@@ -51,9 +51,7 @@
                                     @csrf
                                     <input type="hidden" name="login_type" value="otp-login">
                                     @include("web-views.customer-views.auth.partials._phone")
-
-                                    @include("web-views.customer-views.auth.partials._recaptcha")
-
+                                    {{-- CAPTCHA REMOVED --}}
                                     <button class="btn btn--primary btn-block btn-shadow font-semi-bold" type="submit">
                                         {{ translate('Get_OTP') }}
                                     </button>
@@ -70,7 +68,7 @@
                                     @include("web-views.customer-views.auth.partials._email")
                                     @include("web-views.customer-views.auth.partials._password")
                                     @include("web-views.customer-views.auth.partials._remember-me", ['forgotPassword' => true])
-                                    @include("web-views.customer-views.auth.partials._recaptcha")
+                                    {{-- CAPTCHA REMOVED --}}
                                     <button class="btn btn--primary btn-block btn-shadow font-semi-bold" type="submit">
                                         {{ translate('sign_in') }}
                                     </button>
@@ -90,14 +88,13 @@
                                     @include("web-views.customer-views.auth.partials._email")
                                     @include("web-views.customer-views.auth.partials._password")
                                     @include("web-views.customer-views.auth.partials._remember-me", ['forgotPassword' => true])
-                                    @include("web-views.customer-views.auth.partials._recaptcha")
+                                    {{-- CAPTCHA REMOVED --}}
                                     <button class="btn btn--primary btn-block btn-shadow font-semi-bold" type="submit">
                                         {{ translate('sign_in') }}
                                     </button>
                                     @if(!$multiColumn)
                                         @include("web-views.customer-views.auth.partials._sign-up-instruction")
                                     @endif
-
                                 </form>
                             </div>
                         @elseif($customerOTPLogin && !$customerManualLogin && $customerSocialLogin)
@@ -113,8 +110,7 @@
                                     @csrf
                                     <input type="hidden" name="login_type" value="otp-login">
                                     @include("web-views.customer-views.auth.partials._phone")
-                                    @include("web-views.customer-views.auth.partials._recaptcha")
-
+                                    {{-- CAPTCHA REMOVED --}}
                                     <button class="btn btn--primary btn-block btn-shadow font-semi-bold" type="submit">
                                         {{ translate('Get_OTP') }}
                                     </button>
@@ -128,27 +124,21 @@
                                         action="{{ route('customer.auth.login') }}"
                                         method="post" id="customer-login-form">
                                         @csrf
-
                                         <input type="hidden" name="login_type" class="auth-login-type-input" value="manual-login">
-
                                         <div class="manual-login-items">
                                             @include("web-views.customer-views.auth.partials._email")
                                             @include("web-views.customer-views.auth.partials._password")
                                             @include("web-views.customer-views.auth.partials._remember-me", ['forgotPassword' => true])
                                         </div>
-
                                         <div class="otp-login-items d-none">
                                             @include("web-views.customer-views.auth.partials._phone")
                                         </div>
-
-                                        @include("web-views.customer-views.auth.partials._recaptcha")
-
+                                        {{-- CAPTCHA REMOVED --}}
                                         <div class="manual-login-items">
                                             <button class="btn btn--primary btn-block btn-shadow font-semi-bold" type="submit">
                                                 {{ translate('sign_in') }}
                                             </button>
                                         </div>
-
                                         <div class="otp-login-items d-none">
                                             <button class="btn btn--primary btn-block btn-shadow font-semi-bold" type="submit">
                                                 {{ translate('Get_OTP') }}
@@ -186,7 +176,6 @@
                                                 src="{{theme_asset(path: 'public/assets/front-end/img/icons/otp-login-icon.svg') }}">
                                             <span class="text">{{ translate('OTP_Sign_in') }}</span>
                                         </a>
-
                                         <a class="social-media-login-btn manual-login-btn d-none" href="javascript:">
                                             <img alt=""
                                                 src="{{theme_asset(path: 'public/assets/front-end/img/icons/otp-login-icon.svg') }}">
@@ -207,25 +196,7 @@
 @endsection
 
 @push('script')
-    @php($recaptcha = getWebConfig(name: 'recaptcha'))
-    @if($web_config['firebase_otp_verification'] && $web_config['firebase_otp_verification_status'])
-        <script type="text/javascript">
-            "use strict";
-        </script>
-    @elseif(isset($recaptcha) && $recaptcha['status'] == 1)
-        <script type="text/javascript">
-            "use strict";
-            var onloadCallback = function () {
-                let loginId = grecaptcha.render('recaptcha_element', {
-                    'sitekey': '{{ getWebConfig(name: 'recaptcha')['site_key'] }}'
-                });
-                $('#recaptcha_element').attr('data-login-id', loginId);
-            };
-        </script>
-        <script src="https://www.google.com/recaptcha/api.js?onload=onloadCallback&render=explicit"
-                async defer></script>
-    @endif
-
+    {{-- CAPTCHA SCRIPTS REMOVED --}}
     @if($web_config['firebase_otp_verification_status'])
         <script>
             $('.or-sign-in-with').css('width', $('.or-sign-in-with-row').height())
@@ -234,4 +205,21 @@
 
     <script src="{{ theme_asset(path: 'public/assets/front-end/plugin/intl-tel-input/js/intlTelInput.js') }}"></script>
     <script src="{{ theme_asset(path: 'public/assets/front-end/js/country-picker-init.js') }}"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+    "use strict";
+    document.addEventListener('DOMContentLoaded', function () {
+        document.querySelectorAll('.customer-centralize-login-form').forEach(function (form) {
+            form.addEventListener('submit', function () {
+                Swal.fire({
+                    title: 'Processing...',
+                    text: 'Please wait',
+                    allowOutsideClick: false,
+                    allowEscapeKey: false,
+                    didOpen: function () { Swal.showLoading(); }
+                });
+            });
+        });
+    });
+    </script>
 @endpush
